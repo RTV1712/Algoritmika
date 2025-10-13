@@ -834,15 +834,15 @@ if (timeFilters.length > 0) {
         });
     });
 
-   // document.getElementById('groupFilter').addEventListener('change', (e) => {
-   //     currentGroup = e.target.value;
-   //     displayData();
-   // });
+    document.getElementById('groupFilter').addEventListener('change', (e) => {
+        currentGroup = e.target.value;
+        displayData();
+    });
 
-    //document.getElementById('searchInput').addEventListener('input', (e) => {
-    //    searchQuery = e.target.value.trim();
-     //   displayData();
-    //});
+    document.getElementById('searchInput').addEventListener('input', (e) => {
+        searchQuery = e.target.value.trim();
+        displayData();
+    });
 
     async function fetchData() {
         try {
