@@ -499,30 +499,51 @@
     }
 
     // Функции для формы преподавателя (НОВЫЕ)
-    async function loadTeachers() {
-        try {
-            const response = await fetch(WRITE_API_URL, {
-                method: 'POST',
-                body: JSON.stringify({action: 'getTeachers'})
-            });
-            const result = await response.json();
-            
-            if (result.success) {
-                const teacherSelect = document.getElementById('teacherSelect');
-                teacherSelect.innerHTML = '<option value="">-- Выберите преподавателя --</option>';
-                
-                result.teachers.forEach(teacher => {
-                    const option = document.createElement('option');
-                    option.value = teacher;
-                    option.textContent = teacher;
-                    teacherSelect.appendChild(option);
-                });
-            }
-        } catch (error) {
-            console.error('Ошибка загрузки преподавателей:', error);
-            showMessage('Ошибка загрузки списка преподавателей', 'error');
+   async function loadTeachers() {
+    console.log('🔍 Функция loadTeachers() запущена');
+    
+    try {
+        console.log('📡 Отправка запроса к:', WRITE_API_URL);
+        
+        const response = await fetch(WRITE_API_URL, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({action: 'getTeachers'})
+        });
+        
+        console.log('✅ Ответ получен, статус:', response.status);
+        
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
         }
+        
+        const result = await response.json();
+        console.log('📊 Данные получены:', result);
+        
+        if (result.success) {
+            console.log('👨‍🏫 Преподаватели:', result.teachers);
+            const teacherSelect = document.getElementById('teacherSelect');
+            teacherSelect.innerHTML = '<option value="">-- Выберите преподавателя --</option>';
+            
+            result.teachers.forEach(teacher => {
+                const option = document.createElement('option');
+                option.value = teacher;
+                option.textContent = teacher;
+                teacherSelect.appendChild(option);
+            });
+            
+            console.log('✅ Список преподавателей загружен');
+        } else {
+            console.error('❌ Ошибка в ответе:', result.error);
+            showMessage('Ошибка загрузки списка преподавателей: ' + result.error, 'error');
+        }
+    } catch (error) {
+        console.error('❌ Ошибка загрузки преподавателей:', error);
+        showMessage('Ошибка загрузки списка преподавателей: ' + error.message, 'error');
     }
+}
 
     async function loadGroups() {
         const teacher = document.getElementById('teacherSelect').value;
