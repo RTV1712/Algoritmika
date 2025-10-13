@@ -205,38 +205,46 @@
         .time-filters button:hover {
             background-color: #7a00b3;
         }
-        .teacher-panel {
-            background-color: #2a2a2a;
-            padding: 20px;
-            margin: 20px 0;
-            border-radius: 10px;
-            border-left: 4px solid #9400d3;
-        }
-        
-        .teacher-form {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-            margin-bottom: 20px;
-        }
-        
-        .form-group {
-            display: flex;
-            flex-direction: column;
-        }
-        
-        .form-group label {
-            margin-bottom: 5px;
-            color: #cccccc;
-        }
-        
-        .form-group input, .form-group select {
-            padding: 10px;
-            background-color: #1a1a1a;
-            border: 1px solid #9400d3;
-            border-radius: 5px;
-            color: white;
-        }
+       .teacher-panel {
+    background-color: #2a2a2a;
+    padding: 20px;
+    margin: 20px 0;
+    border-radius: 10px;
+    border-left: 4px solid #9400d3;
+}
+
+.teacher-form {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-group label {
+    margin-bottom: 5px;
+    color: #cccccc;
+    font-weight: bold;
+}
+
+.form-group input, .form-group select {
+    padding: 12px;
+    background-color: #1a1a1a;
+    border: 1px solid #9400d3;
+    border-radius: 5px;
+    color: white;
+    font-size: 14px;
+}
+
+.form-group input:focus, .form-group select:focus {
+    outline: none;
+    border-color: #00ff00;
+    box-shadow: 0 0 5px rgba(0, 255, 0, 0.3);
+}
         
         .submit-btn {
             grid-column: span 2;
@@ -257,10 +265,7 @@
             display: none;
         }
         
-        .login-form {
-            text-align: center;
-            padding: 20px;
-        }
+        
         .points-display {
     grid-column: span 2;
     display: grid;
@@ -287,6 +292,7 @@
 .new-points input {
     width: 100%;
     margin-top: 5px;
+    padding: 10px;
 }
 
 .teacher-form {
@@ -295,7 +301,6 @@
     gap: 15px;
     margin-bottom: 20px;
 }
-
 .submit-btn {
     grid-column: span 2;
     padding: 15px;
@@ -312,75 +317,91 @@
     transform: translateY(-2px);
     box-shadow: 0 5px 15px rgba(148, 0, 211, 0.4);
 }
+
+.login-form {
+    text-align: center;
+    padding: 30px;
+    background-color: #2a2a2a;
+    border-radius: 10px;
+    margin: 20px 0;
+    border-left: 4px solid #9400d3;
+}
+
+.login-form h3 {
+    margin-bottom: 20px;
+    color: #ffffff;
+}
+
     </style>
 </head>
 <body>
     <div class="cover">
         <h1>БАЛЛЫ УЧЕНИКОВ</h1>
         <div class="cover-buttons">
-            <button id="scrollButton" class="cover-button">УЗНАТЬ СВОЙ БАЛЛ</button>
-            <button id="teacherButton" class="cover-button">ДЛЯ ПРЕПОДАВАТЕЛЕЙ</button>
-            <a href="https://learn.algoritmika.org/login" target="_blank" class="cover-button">ПЕРЕЙТИ НА ПЛАТФОРМУ</a>
+        <button id="scrollButton" class="cover-button">УЗНАТЬ СВОЙ БАЛЛ</button>
+        <button id="teacherButton" class="cover-button">ДЛЯ ПРЕПОДАВАТЕЛЕЙ</button> <!-- ДОБАВЬТЕ ЭТУ СТРОКУ -->
+        <a href="https://learn.algoritmika.org/login" target="_blank" class="cover-button">ПЕРЕЙТИ НА ПЛАТФОРМУ</a>
         </div>
     </div>
 
     <div class="content">
-        <!-- Форма входа для преподавателей -->
-        <div id="loginSection" class="login-form">
-            <h3>Доступ для преподавателей</h3>
-            <input type="password" id="teacherPassword" placeholder="Введите пароль" style="padding: 10px; margin: 10px;">
-            <button onclick="checkPassword()" class="cover-button">Войти</button>
-        </div>
+    <!-- Форма входа для преподавателей -->
+    <div id="loginSection" class="login-form" style="display: none;">
+        <h3>🔐 Доступ для преподавателей</h3>
+        <input type="password" id="teacherPassword" placeholder="Введите пароль" 
+               style="padding: 12px; margin: 15px; width: 200px; border-radius: 5px; border: 1px solid #9400d3; background: #1a1a1a; color: white;">
+        <button onclick="checkPassword()" class="cover-button" style="margin: 10px;">Войти</button>
+    </div>
 
-        <!-- Панель преподавателя (скрыта по умолчанию) -->
-        <div id="teacherPanel" class="teacher-panel password-protected">
-    <h3>📝 Добавление/изменение баллов</h3>
-    <div class="teacher-form">
-        <div class="form-group">
-            <label for="teacherSelect">👨‍🏫 Преподаватель:</label>
-            <select id="teacherSelect" onchange="loadGroups()">
-                <option value="">-- Выберите преподавателя --</option>
-            </select>
-        </div>
-        
-        <div class="form-group">
-            <label for="groupSelect">👥 Группа:</label>
-            <select id="groupSelect" onchange="loadStudents()" disabled>
-                <option value="">-- Сначала выберите преподавателя --</option>
-            </select>
-        </div>
-        
-        <div class="form-group">
-            <label for="dateSelect">📅 Дата занятия:</label>
-            <input type="date" id="dateSelect" onchange="loadCurrentPoints()">
-        </div>
-        
-        <div class="form-group">
-            <label for="studentSelect">🎓 Ученик:</label>
-            <select id="studentSelect" onchange="loadCurrentPoints()" disabled>
-                <option value="">-- Сначала выберите группу --</option>
-            </select>
-        </div>
-        
-        <div class="points-display">
-            <div class="current-points">
-                <label>Текущие баллы за это занятие:</label>
-                <div id="currentPointsDisplay" class="points-value">0</div>
+    <!-- Панель преподавателя (скрыта по умолчанию) -->
+    <div id="teacherPanel" class="teacher-panel password-protected" style="display: none;">
+        <h3>📝 Добавление/изменение баллов</h3>
+        <div class="teacher-form">
+            <div class="form-group">
+                <label for="teacherSelect">👨‍🏫 Преподаватель:</label>
+                <select id="teacherSelect" onchange="loadGroups()">
+                    <option value="">-- Выберите преподавателя --</option>
+                </select>
             </div>
             
-            <div class="new-points">
-                <label for="pointsInput">Новые баллы:</label>
-                <input type="number" id="pointsInput" min="0" max="100" value="0" 
-                       style="font-size: 18px; font-weight: bold; text-align: center;">
+            <div class="form-group">
+                <label for="groupSelect">👥 Группа:</label>
+                <select id="groupSelect" onchange="loadStudents()" disabled>
+                    <option value="">-- Сначала выберите преподавателя --</option>
+                </select>
             </div>
+            
+            <div class="form-group">
+                <label for="dateSelect">📅 Дата занятия:</label>
+                <input type="date" id="dateSelect" onchange="loadCurrentPoints()">
+            </div>
+            
+            <div class="form-group">
+                <label for="studentSelect">🎓 Ученик:</label>
+                <select id="studentSelect" onchange="loadCurrentPoints()" disabled>
+                    <option value="">-- Сначала выберите группу --</option>
+                </select>
+            </div>
+            
+            <div class="points-display">
+                <div class="current-points">
+                    <label>Текущие баллы за это занятие:</label>
+                    <div id="currentPointsDisplay" class="points-value">0</div>
+                </div>
+                
+                <div class="new-points">
+                    <label for="pointsInput">Новые баллы:</label>
+                    <input type="number" id="pointsInput" min="0" max="100" value="0" 
+                           style="font-size: 18px; font-weight: bold; text-align: center; padding: 10px;">
+                </div>
+            </div>
+            
+            <button class="submit-btn" onclick="updatePoints()">
+                💾 Сохранить баллы
+            </button>
         </div>
-        
-        <button class="submit-btn" onclick="updatePoints()">
-            💾 Сохранить баллы
-        </button>
+        <div id="message" style="margin-top: 15px; padding: 10px; border-radius: 5px;"></div>
     </div>
-    <div id="message" style="margin-top: 15px; padding: 10px; border-radius: 5px;"></div>
-</div>
 
         <!-- Остальная часть вашего кода -->
         <div class="time-filters">
@@ -497,7 +518,23 @@
             return (recordDate >= startDate && recordDate <= now) ? sum + points : sum;
         }, 0);
     }
-
+function checkRequiredElements() {
+    const requiredElements = [
+        'teacherButton', 'loginSection', 'teacherPanel', 
+        'teacherSelect', 'groupSelect', 'studentSelect',
+        'dateSelect', 'pointsInput', 'currentPointsDisplay',
+        'scrollButton', 'groupFilter', 'searchInput', 'students'
+    ];
+    
+    requiredElements.forEach(id => {
+        const element = document.getElementById(id);
+        if (!element) {
+            console.warn(`⚠️ Элемент с id "${id}" не найден`);
+        } else {
+            console.log(`✅ Элемент "${id}" найден`);
+        }
+    });
+}
     // Функции для формы преподавателя (НОВЫЕ)
    async function loadTeachers() {
     console.log('🔍 Функция loadTeachers() запущена');
@@ -735,10 +772,58 @@
         document.querySelector('.content').scrollIntoView({ behavior: 'smooth' });
     });
 
-    document.getElementById('teacherButton').addEventListener('click', () => {
-        document.getElementById('loginSection').scrollIntoView({ behavior: 'smooth' });
+    const teacherButton = document.getElementById('teacherButton');
+if (teacherButton) {
+    teacherButton.addEventListener('click', () => {
+        const loginSection = document.getElementById('loginSection');
+        if (loginSection) {
+            loginSection.style.display = 'block';
+            loginSection.scrollIntoView({ behavior: 'smooth' });
+        }
     });
+} else {
+    console.warn('⚠️ Кнопка teacherButton не найдена');
+}
+// Также добавьте проверки для других элементов:
+const scrollButton = document.getElementById('scrollButton');
+if (scrollButton) {
+    scrollButton.addEventListener('click', () => {
+        document.querySelector('.content').scrollIntoView({ behavior: 'smooth' });
+    });
+}
 
+// Проверка для других обработчиков
+const groupFilter = document.getElementById('groupFilter');
+if (groupFilter) {
+    groupFilter.addEventListener('change', (e) => {
+        currentGroup = e.target.value;
+        displayData();
+    });
+}
+
+const searchInput = document.getElementById('searchInput');
+if (searchInput) {
+    searchInput.addEventListener('input', (e) => {
+        searchQuery = e.target.value.trim();
+        displayData();
+    });
+}
+
+// Проверка для time-filters
+const timeFilters = document.querySelectorAll('.time-filters button');
+if (timeFilters.length > 0) {
+    timeFilters.forEach(button => {
+        button.addEventListener('click', (e) => {
+            currentPeriod = e.target.dataset.period;
+            document.querySelectorAll('.time-filters button').forEach(btn => 
+                btn.classList.remove('active'));
+            e.target.classList.add('active');
+            displayData();
+        });
+    });
+} else {
+    console.warn('⚠️ Кнопки time-filters не найдены');
+}
     document.querySelectorAll('.time-filters button').forEach(button => {
         button.addEventListener('click', (e) => {
             currentPeriod = e.target.dataset.period;
@@ -802,10 +887,15 @@
 
     // Инициализация при загрузке страницы
     document.addEventListener('DOMContentLoaded', function() {
-        // Устанавливаем сегодняшнюю дату по умолчанию
+    console.log('🔍 Проверка элементов страницы...');
+    checkRequiredElements();
+    
+    // Устанавливаем сегодняшнюю дату по умолчанию
+    const dateSelect = document.getElementById('dateSelect');
+    if (dateSelect) {
         const today = new Date().toISOString().split('T')[0];
-        document.getElementById('dateSelect').value = today;
-        
+        dateSelect.value = today;
+    }
         // Загружаем основные данные
         fetchData();
     });
