@@ -323,9 +323,177 @@
     const API_URL = 'https://script.google.com/macros/s/AKfycbwK295-WVyVp7zgqwaxt_wRSkosdxjXnKLaoN5SyLcGZQObBYY5rjMmQ0c4wgcc8Q_J1A/exec';
     const WRITE_API_URL = 'https://script.google.com/macros/s/ВАШ_НОВЫЙ_ИДЕНТИФИКАТОР/exec'; // Замените на URL нового веб-приложения
     const TEACHER_PASSWORD = 'teacher123'; // Замените на реальный пароль
-    
+    const BACKGROUND_IMAGE = 'https://img3.akspic.ru/crops/5/4/7/2/5/152745/152745-dizajn-graficeskij_dizajn-sinij-krasochnost-purpur-3840x2160.jpg';
     // Ваши существующие функции остаются
-    
+    document.querySelector('.cover').style.backgroundImage = `url(${BACKGROUND_IMAGE})`;
+    let studentsData = [];
+    let currentPeriod = 'all';
+    let currentGroup = 'all';
+    let searchQuery = '';
+
+    function getEmoji(points) {
+        if (points >= 0 && points < 20) return '👍';
+        if (points >= 20 && points < 40) return '😊';
+        if (points >= 40 && points < 60) return '⭐';
+        if (points >= 60 && points < 80) return '🚀';
+        if (points >= 80 && points <= 100) return '🔥';
+        return '';
+    }
+
+    function displayData() {
+        const container = document.getElementById('students');
+        container.innerHTML = '';
+        
+        const filteredStudents = studentsData
+            .filter(student => {
+                const groupMatch = currentGroup === 'all' || student.group === currentGroup;
+                const nameMatch = student.name.toLowerCase().includes(searchQuery.toLowerCase());
+                return groupMatch && nameMatch;
+            })
+            .map(student => ({
+                ...student,
+                displayPoints: calculatePeriodPoints(student, currentPeriod)
+            }))
+            .sort((a, b) => b.displayPoints - a.displayPoints);
+
+        filteredStudents.forEach(student => {
+            const barContainer = document.createElement('div');
+            barContainer.className = 'bar-container';
+
+            const infoContainer = document.createElement('div');
+            infoContainer.className = 'student-info';
+            
+            const nameSpan = document.createElement('span');
+            nameSpan.className = 'student-name';
+            nameSpan.textContent = student.name.toUpperCase();
+            
+            const pointsSpan = document.createElement('span');
+            pointsSpan.className = 'student-points';
+            pointsSpan.textContent = `${student.displayPoints} БАЛЛОВ`;
+            
+            infoContainer.appendChild(nameSpan);
+            infoContainer.appendChild(pointsSpan);
+            
+            const barWrapper = document.createElement('div');
+            barWrapper.className = 'bar-wrapper';
+            
+            const bar = document.createElement('div');
+            bar.className = 'bar';
+            const width = Math.min((student.displayPoints / 100) * 100, 100);
+            bar.style.width = `${width}%`;
+            
+            const emojiSpan = document.createElement('span');
+            emojiSpan.className = 'emoji';
+            emojiSpan.textContent = getEmoji(student.displayPoints);
+            
+            barWrapper.appendChild(bar);
+            barWrapper.appendChild(emojiSpan);
+            
+            barContainer.appendChild(infoContainer);
+            barContainer.appendChild(barWrapper);
+            
+            container.appendChild(barContainer);
+        });
+    }
+
+    function calculatePeriodPoints(student, period) {
+        if (period === 'all') return student.total;
+        
+        const today = new Date();
+        let rangeStart, rangeEnd;
+        
+        if (period === 'day') {
+            rangeStart = new Date(today);
+            rangeStart.setHours(0, 0, 0, 0);
+            rangeEnd = new Date(today);
+            rangeEnd.setHours(23, 59, 59, 999);
+        } 
+        else if (period === 'week') {
+            const dayOfWeek = today.getDay();
+            const diff = today.getDate() - dayOfWeek + (dayOfWeek === 0 ? -6 : 1);
+            rangeStart = new Date(today.setDate(diff));
+            rangeStart.setHours(0, 0, 0, 0);
+            rangeEnd = new Date(rangeStart);
+            rangeEnd.setDate(rangeStart.getDate() + 6);
+            rangeEnd.setHours(23, 59, 59, 999);
+        }
+        else if (period === 'month') {
+            rangeStart = new Date(today.getFullYear(), today.getMonth(), 1);
+            rangeEnd = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+            rangeEnd.setHours(23, 59, 59, 999);
+        }
+        
+        return Object.entries(student.dates).reduce((sum, [dateStr, points]) => {
+            const date = new Date(dateStr);
+            return (date >= rangeStart && date <= rangeEnd) ? sum + points : sum;
+        }, 0);
+    }
+
+    document.getElementById('scrollButton').addEventListener('click', () => {
+        document.querySelector('.content').scrollIntoView({ behavior: 'smooth' });
+    });
+
+    document.querySelectorAll('.time-filters button').forEach(button => {
+        button.addEventListener('click', (e) => {
+            currentPeriod = e.target.dataset.period;
+            document.querySelectorAll('.time-filters button').forEach(btn => 
+                btn.classList.remove('active'));
+            e.target.classList.add('active');
+            displayData();
+        });
+    });
+
+    document.getElementById('groupFilter').addEventListener('change', (e) => {
+        currentGroup = e.target.value;
+        displayData();
+    });
+
+    document.getElementById('searchInput').addEventListener('input', (e) => {
+        searchQuery = e.target.value.trim();
+        displayData();
+    });
+
+    async function fetchData() {
+        try {
+            const response = await fetch(API_URL);
+            const rawData = await response.json();
+            
+            studentsData = rawData.map(student => {
+                const dates = {};
+                for (const [dateStr, points] of Object.entries(student.dates)) {
+                    dates[dateStr] = Number(points) || 0;
+                }
+                
+                return {
+                    name: student.name,
+                    group: student.group,
+                    total: Number(student.total) || 0,
+                    dates: dates
+                };
+            });
+            
+            populateGroupFilter();
+            displayData();
+        } catch (error) {
+            console.error('Ошибка загрузки данных:', error);
+            alert('Произошла ошибка при загрузке данных. Пожалуйста, попробуйте позже.');
+        }
+    }
+
+    function populateGroupFilter() {
+        const groupFilter = document.getElementById('groupFilter');
+        const groups = [...new Set(studentsData.map(student => student.group))];
+        
+        groups.forEach(group => {
+            if (group) {
+                const option = document.createElement('option');
+                option.value = group;
+                option.textContent = group;
+                groupFilter.appendChild(option);
+            }
+        });
+    }
+
     // Новые функции для работы преподавателей
     function checkPassword() {
         const password = document.getElementById('teacherPassword').value;
