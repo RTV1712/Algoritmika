@@ -664,37 +664,233 @@
         console.log('✅ GroupFilter заполнен, групп:', groups.length);
     }
 
-    // ========== ФУНКЦИИ ПРЕПОДАВАТЕЛЯ ==========
-    // ... ваши функции преподавателя остаются без изменений ...
-    async function loadTeachers() {
-        console.log('🔍 Загрузка преподавателей...');
-        try {
-            const response = await fetch(WRITE_API_URL, {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({action: 'getTeachers'})
-            });
-            
-            const result = await response.json();
-            console.log('📊 Ответ преподавателей:', result);
-            
-            if (result.success) {
-                const teacherSelect = document.getElementById('teacherSelect');
-                teacherSelect.innerHTML = '<option value="">-- Выберите преподавателя --</option>';
-                result.teachers.forEach(teacher => {
-                    const option = document.createElement('option');
-                    option.value = teacher;
-                    option.textContent = teacher;
-                    teacherSelect.appendChild(option);
-                });
-                console.log('✅ Преподаватели загружены');
-            }
-        } catch (error) {
-            console.error('❌ Ошибка загрузки преподавателей:', error);
-        }
-    }
+    // ========== ФУНКЦИИ ДЛЯ ПРЕПОДАВАТЕЛЕЙ ==========
 
-    // ... остальные функции преподавателя ...
+function checkPassword() {
+    console.log('🔐 Проверка пароля...');
+    const password = document.getElementById('teacherPassword').value;
+    
+    if (password === TEACHER_PASSWORD) {
+        document.getElementById('loginSection').style.display = 'none';
+        document.getElementById('teacherPanel').style.display = 'block';
+        console.log('✅ Парверен, загружаем преподавателей...');
+        loadTeachers();
+    } else {
+        alert('❌ Неверный пароль');
+        console.log('❌ Неверный пароль');
+    }
+}
+
+async function loadTeachers() {
+    console.log('🔍 Загрузка преподавателей...');
+    try {
+        const response = await fetch(WRITE_API_URL, {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({action: 'getTeachers'})
+        });
+        
+        const result = await response.json();
+        console.log('📊 Ответ преподавателей:', result);
+        
+        if (result.success) {
+            const teacherSelect = document.getElementById('teacherSelect');
+            teacherSelect.innerHTML = '<option value="">-- Выберите преподавателя --</option>';
+            result.teachers.forEach(teacher => {
+                const option = document.createElement('option');
+                option.value = teacher;
+                option.textContent = teacher;
+                teacherSelect.appendChild(option);
+            });
+            console.log('✅ Преподаватели загружены:', result.teachers.length);
+        } else {
+            console.error('❌ Ошибка загрузки преподавателей:', result.error);
+            showMessage('Ошибка загрузки списка преподавателей: ' + result.error, 'error');
+        }
+    } catch (error) {
+        console.error('❌ Ошибка загрузки преподавателей:', error);
+        showMessage('Ошибка загрузки списка преподавателей: ' + error.message, 'error');
+    }
+}
+
+async function loadGroups() {
+    const teacher = document.getElementById('teacherSelect').value;
+    const groupSelect = document.getElementById('groupSelect');
+    
+    if (!teacher) {
+        groupSelect.innerHTML = '<option value="">-- Сначала выберите преподавателя --</option>';
+        groupSelect.disabled = true;
+        document.getElementById('studentSelect').innerHTML = '<option value="">-- Сначала выберите группу --</option>';
+        document.getElementById('studentSelect').disabled = true;
+        return;
+    }
+    
+    try {
+        const response = await fetch(WRITE_API_URL, {
+            method: 'POST',
+            body: JSON.stringify({action: 'getGroups', teacher: teacher})
+        });
+        const result = await response.json();
+        
+        if (result.success) {
+            groupSelect.innerHTML = '<option value="">-- Выберите группу --</option>';
+            result.groups.forEach(group => {
+                const option = document.createElement('option');
+                option.value = group;
+                option.textContent = group;
+                groupSelect.appendChild(option);
+            });
+            groupSelect.disabled = false;
+            
+            // Сбрасываем выбор студента
+            document.getElementById('studentSelect').innerHTML = '<option value="">-- Сначала выберите группу --</option>';
+            document.getElementById('studentSelect').disabled = true;
+            document.getElementById('currentPointsDisplay').textContent = '0';
+            document.getElementById('pointsInput').value = '0';
+        }
+    } catch (error) {
+        console.error('Ошибка загрузки групп:', error);
+        showMessage('Ошибка загрузки списка групп', 'error');
+    }
+}
+
+async function loadStudents() {
+    const teacher = document.getElementById('teacherSelect').value;
+    const group = document.getElementById('groupSelect').value;
+    const studentSelect = document.getElementById('studentSelect');
+    
+    if (!teacher || !group) {
+        studentSelect.innerHTML = '<option value="">-- Сначала выберите группу --</option>';
+        studentSelect.disabled = true;
+        document.getElementById('currentPointsDisplay').textContent = '0';
+        document.getElementById('pointsInput').value = '0';
+        return;
+    }
+    
+    try {
+        const response = await fetch(WRITE_API_URL, {
+            method: 'POST',
+            body: JSON.stringify({action: 'getStudents', teacher: teacher, group: group})
+        });
+        const result = await response.json();
+        
+        if (result.success) {
+            studentSelect.innerHTML = '<option value="">-- Выберите ученика --</option>';
+            currentStudents = result.students;
+            
+            result.students.forEach(student => {
+                const option = document.createElement('option');
+                option.value = student.id;
+                option.textContent = student.name;
+                studentSelect.appendChild(option);
+            });
+            studentSelect.disabled = false;
+            
+            // Сбрасываем баллы
+            document.getElementById('currentPointsDisplay').textContent = '0';
+            document.getElementById('pointsInput').value = '0';
+        }
+    } catch (error) {
+        console.error('Ошибка загрузки студентов:', error);
+        showMessage('Ошибка загрузки списка студентов', 'error');
+    }
+}
+
+async function loadCurrentPoints() {
+    const studentId = document.getElementById('studentSelect').value;
+    const date = document.getElementById('dateSelect').value;
+    
+    if (!studentId || !date) {
+        document.getElementById('currentPointsDisplay').textContent = '0';
+        document.getElementById('pointsInput').value = '0';
+        return;
+    }
+    
+    try {
+        const response = await fetch(WRITE_API_URL, {
+            method: 'POST',
+            body: JSON.stringify({
+                action: 'getCurrentPoints',
+                studentId: studentId,
+                date: date
+            })
+        });
+        const result = await response.json();
+        
+        if (result.success) {
+            document.getElementById('currentPointsDisplay').textContent = result.currentPoints;
+            document.getElementById('pointsInput').value = result.currentPoints;
+        }
+    } catch (error) {
+        console.error('Ошибка загрузки текущих баллов:', error);
+        showMessage('Ошибка загрузки текущих баллов', 'error');
+    }
+}
+
+async function updatePoints() {
+    const studentId = document.getElementById('studentSelect').value;
+    const date = document.getElementById('dateSelect').value;
+    const points = document.getElementById('pointsInput').value;
+    
+    if (!studentId || !date || points === '') {
+        showMessage('Заполните все поля: преподаватель, группа, дата, ученик и баллы', 'error');
+        return;
+    }
+    
+    if (points < 0 || points > 100) {
+        showMessage('Баллы должны быть от 0 до 100', 'error');
+        return;
+    }
+    
+    try {
+        const response = await fetch(WRITE_API_URL, {
+            method: 'POST',
+            body: JSON.stringify({
+                action: 'updatePoints',
+                studentId: studentId,
+                date: date,
+                points: points
+            })
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            showMessage('✅ Баллы успешно сохранены!', 'success');
+            // Обновляем общие данные на главной странице
+            fetchData();
+            // Сбрасываем форму
+            document.getElementById('pointsInput').value = '0';
+            // Перезагружаем текущие баллы
+            loadCurrentPoints();
+        } else {
+            showMessage('❌ Ошибка: ' + result.error, 'error');
+        }
+    } catch (error) {
+        showMessage('❌ Ошибка сети: ' + error.toString(), 'error');
+    }
+}
+
+function showMessage(text, type) {
+    const messageDiv = document.getElementById('message');
+    if (!messageDiv) {
+        console.warn('❌ Элемент message не найден');
+        return;
+    }
+    
+    messageDiv.textContent = text;
+    messageDiv.style.backgroundColor = type === 'success' ? '#2a5a2a' : '#5a2a2a';
+    messageDiv.style.color = type === 'success' ? '#90ee90' : '#ff6b6b';
+    messageDiv.style.padding = '10px';
+    messageDiv.style.borderRadius = '5px';
+    messageDiv.style.marginTop = '15px';
+    
+    // Автоматически скрыть сообщение через 5 секунд
+    setTimeout(() => {
+        messageDiv.textContent = '';
+        messageDiv.style.backgroundColor = '';
+    }, 5000);
+}
 
     // ========== ОБРАБОТЧИКИ СОБЫТИЙ ==========
     function initEventListeners() {
