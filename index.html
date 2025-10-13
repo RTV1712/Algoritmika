@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Баллы учеников</title>
+    <style>
+        /* Ваши существующие стили остаются */
+        
+        /* Новые стили для формы преподавателя */
+        .teacher-panel {
+            background-color: #2a2a2a;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 10px;
+            border-left: 4px solid #9400d3;
+        }
+        
+        .teacher-form {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .form-group label {
+            margin-bottom: 5px;
+            color: #cccccc;
+        }
+        
+        .form-group input, .form-group select {
+            padding: 10px;
+            background-color: #1a1a1a;
+            border: 1px solid #9400d3;
+            border-radius: 5px;
+            color: white;
+        }
+        
+        .submit-btn {
+            grid-column: span 2;
+            padding: 12px;
+            background-color: #9400d3;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        
+        .submit-btn:hover {
+            background-color: #7a00b3;
+        }
+        
+        .password-protected {
+            display: none;
+        }
+        
+        .login-form {
+            text-align: center;
+            padding: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="cover">
+        <h1>БАЛЛЫ УЧЕНИКОВ</h1>
+        <div class="cover-buttons">
+            <button id="scrollButton" class="cover-button">УЗНАТЬ СВОЙ БАЛЛ</button>
+            <button id="teacherButton" class="cover-button">ДЛЯ ПРЕПОДАВАТЕЛЕЙ</button>
+            <a href="https://learn.algoritmika.org/login" target="_blank" class="cover-button">ПЕРЕЙТИ НА ПЛАТФОРМУ</a>
+        </div>
+    </div>
+
+    <div class="content">
+        <!-- Форма входа для преподавателей -->
+        <div id="loginSection" class="login-form">
+            <h3>Доступ для преподавателей</h3>
+            <input type="password" id="teacherPassword" placeholder="Введите пароль" style="padding: 10px; margin: 10px;">
+            <button onclick="checkPassword()" class="cover-button">Войти</button>
+        </div>
+
+        <!-- Панель преподавателя (скрыта по умолчанию) -->
+        <div id="teacherPanel" class="teacher-panel password-protected">
+            <h3>Добавить баллы</h3>
+            <div class="teacher-form">
+                <div class="form-group">
+                    <label for="studentSelect">Ученик:</label>
+                    <select id="studentSelect">
+                        <option value="">Выберите ученика</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="pointsInput">Баллы:</label>
+                    <input type="number" id="pointsInput" min="0" max="100">
+                </div>
+                <div class="form-group">
+                    <label for="dateInput">Дата:</label>
+                    <input type="date" id="dateInput">
+                </div>
+                <div class="form-group">
+                    <label for="groupInput">Группа:</label>
+                    <input type="text" id="groupInput">
+                </div>
+                <button class="submit-btn" onclick="addPoints()">Добавить баллы</button>
+            </div>
+            <div id="message"></div>
+        </div>
+
+        <!-- Остальная часть вашего кода -->
+        <div class="time-filters">
+            <button data-period="all" class="active">Все время</button>
+            <button data-period="day">День</button>
+            <button data-period="week">Неделя</button>
+            <button data-period="month">Месяц</button>
+        </div>
+
+        <!-- ... остальной ваш код ... -->
+    </div>
+
+<script>
+    const API_URL = 'https://script.google.com/macros/s/AKfycbwK295-WVyVp7zgqwaxt_wRSkosdxjXnKLaoN5SyLcGZQObBYY5rjMmQ0c4wgcc8Q_J1A/exec';
+    const WRITE_API_URL = 'https://script.google.com/macros/s/ВАШ_НОВЫЙ_ИДЕНТИФИКАТОР/exec'; // Замените на URL нового веб-приложения
+    const TEACHER_PASSWORD = 'teacher123'; // Замените на реальный пароль
+    
+    // Ваши существующие функции остаются
+    
+    // Новые функции для работы преподавателей
+    function checkPassword() {
+        const password = document.getElementById('teacherPassword').value;
+        if (password === TEACHER_PASSWORD) {
+            document.getElementById('loginSection').style.display = 'none';
+            document.getElementById('teacherPanel').style.display = 'block';
+            loadStudentsForTeacher();
+        } else {
+            alert('Неверный пароль');
+        }
+    }
+    
+    function loadStudentsForTeacher() {
+        const studentSelect = document.getElementById('studentSelect');
+        studentSelect.innerHTML = '<option value="">Выберите ученика</option>';
+        
+        studentsData.forEach(student => {
+            const option = document.createElement('option');
+            option.value = student.name;
+            option.textContent = student.name;
+            studentSelect.appendChild(option);
+        });
+        
+        // Устанавливаем сегодняшнюю дату по умолчанию
+        document.getElementById('dateInput').valueAsDate = new Date();
+    }
+    
+    async function addPoints() {
+        const student = document.getElementById('studentSelect').value;
+        const points = document.getElementById('pointsInput').value;
+        const date = document.getElementById('dateInput').value;
+        const group = document.getElementById('groupInput').value;
+        
+        if (!student || !points || !date) {
+            showMessage('Заполните все обязательные поля', 'error');
+            return;
+        }
+        
+        try {
+            const response = await fetch(WRITE_API_URL, {
+                method: 'POST',
+                body: JSON.stringify({
+                    student: student,
+                    points: parseInt(points),
+                    date: date,
+                    group: group
+                })
+            });
+            
+            const result = await response.json();
+            
+            if (result.success) {
+                showMessage('Баллы успешно добавлены!', 'success');
+                // Очищаем форму
+                document.getElementById('pointsInput').value = '';
+                // Обновляем данные
+                fetchData();
+            } else {
+                showMessage('Ошибка при добавлении баллов: ' + result.error, 'error');
+            }
+        } catch (error) {
+            showMessage('Ошибка сети: ' + error.toString(), 'error');
+        }
+    }
+    
+    function showMessage(text, type) {
+        const messageDiv = document.getElementById('message');
+        messageDiv.textContent = text;
+        messageDiv.style.color = type === 'success' ? '#00ff00' : '#ff4444';
+        messageDiv.style.marginTop = '10px';
+    }
+    
+    document.getElementById('teacherButton').addEventListener('click', () => {
+        document.getElementById('loginSection').scrollIntoView({ behavior: 'smooth' });
+    });
+
+    // Инициализация
+    document.getElementById('dateInput').valueAsDate = new Date();
+    fetchData();
+</script>
+</body>
+</html>
