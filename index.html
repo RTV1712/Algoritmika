@@ -441,27 +441,25 @@
     </div>
 
 <script>
-    // Простой API URL (старый рабочий)
-    const API_URL = 'https://script.google.com/macros/s/AKfycbzR0HyhyFRo-LXPpRPFkTkcPZ3CcsVAVgNB3g63GQX74OjyMGYPvFbWOdgXs86cYbAn/exec';
-    const TEACHER_PASSWORD = 't123';
-    
-    let studentsData = [];
-    let currentGroup = 'all';
-    let currentPeriod = 'all';
-    let searchQuery = '';
-    let currentStudents = [];
+    const API_URL = 'https://script.google.com/macros/s/AKfycby4U365iMv8mZVELhEJFjII0CZ262-gpclf_lUPXvoClpQNtDkFQsS-pLGTbxLZ6bK6/exec';
+const TEACHER_PASSWORD = 'teacher123';
 
-    function getEmoji(points) {
-        if (points >= 0 && points < 20) return '👍';
-        if (points >= 20 && points < 40) return '😊';
-        if (points >= 40 && points < 60) return '⭐';
-        if (points >= 60 && points < 80) return '🚀';
-        if (points >= 80 && points <= 100) return '🔥';
-        return '';
-    }
+let studentsData = [];
+let currentGroup = 'all';
+let currentPeriod = 'all';
+let searchQuery = '';
 
-    // Простая функция загрузки данных
-    async function loadStudents() {
+function getEmoji(points) {
+    if (points >= 0 && points < 20) return '👍';
+    if (points >= 20 && points < 40) return '😊';
+    if (points >= 40 && points < 60) return '⭐';
+    if (points >= 60 && points < 80) return '🚀';
+    if (points >= 80 && points <= 100) return '🔥';
+    return '';
+}
+
+// Исправленная функция загрузки данных
+async function loadStudents() {
     try {
         console.log('🔄 Загрузка данных с API...');
         document.getElementById('students').innerHTML = '<div style="text-align: center; padding: 20px; color: #ccc;">Загрузка данных...</div>';
@@ -474,18 +472,16 @@
         }
         
         const data = await response.json();
-        console.log('📊 Данные:', data);
+        console.log('📊 Данные от API:', data);
         
-        // Обрабатываем оба варианта структуры ответа
+        // ПРАВИЛЬНАЯ ОБРАБОТКА ДАННЫХ - ваш API возвращает {success: true, data: [...]}
         if (data.success && data.data) {
             studentsData = data.data;
-        } else if (Array.isArray(data)) {
-            studentsData = data;
+            console.log('✅ Загружено студентов:', studentsData.length);
+            console.log('📝 Пример студента:', studentsData[0]);
         } else {
-            throw new Error('Неверный формат данных от сервера');
+            throw new Error('Неверный формат данных от сервера: ' + JSON.stringify(data));
         }
-        
-        console.log('✅ Загружено студентов:', studentsData.length);
         
         updateFilters();
         displayStudents();
@@ -495,280 +491,326 @@
         document.getElementById('students').innerHTML = 
             '<div style="text-align: center; padding: 20px; color: #ff4444;">' +
             'Ошибка загрузки данных: ' + error.message + 
-            '<br>Проверьте URL API и настройки CORS' +
             '</div>';
     }
 }
 
-    function updateFilters() {
-        const groupFilter = document.getElementById('groupFilter');
-        const groups = [...new Set(studentsData.map(s => s.group))];
-        
-        groupFilter.innerHTML = '<option value="all">ВСЕ ГРУППЫ</option>';
-        groups.forEach(group => {
+function updateFilters() {
+    const groupFilter = document.getElementById('groupFilter');
+    const groups = [...new Set(studentsData.map(s => s.group))];
+    
+    groupFilter.innerHTML = '<option value="all">ВСЕ ГРУППЫ</option>';
+    groups.forEach(group => {
+        if (group) { // Проверяем, что группа не пустая
             const option = document.createElement('option');
             option.value = group;
             option.textContent = group;
             groupFilter.appendChild(option);
+        }
+    });
+}
+
+function calculatePeriodPoints(student, period) {
+    if (period === 'all') return student.total;
+    return student.total; // Упрощенная версия без фильтрации по датам
+}
+
+function displayStudents() {
+    const container = document.getElementById('students');
+    
+    // Отладочная информация
+    console.log('🔄 Отображение студентов. Всего:', studentsData.length);
+    console.log('🔍 Фильтры - группа:', currentGroup, 'поиск:', searchQuery);
+    
+    const filtered = studentsData
+        .filter(student => {
+            const groupMatch = currentGroup === 'all' || student.group === currentGroup;
+            const nameMatch = student.name && student.name.toLowerCase().includes(searchQuery.toLowerCase());
+            return groupMatch && nameMatch;
+        })
+        .map(student => ({
+            ...student,
+            displayPoints: calculatePeriodPoints(student, currentPeriod)
+        }))
+        .sort((a, b) => b.displayPoints - a.displayPoints);
+
+    console.log('✅ Отфильтровано студентов:', filtered.length);
+
+    container.innerHTML = '';
+
+    if (filtered.length === 0) {
+        container.innerHTML = '<div style="text-align: center; padding: 20px; color: #ccc;">Студенты не найдены</div>';
+        return;
+    }
+
+    filtered.forEach(student => {
+        const barContainer = document.createElement('div');
+        barContainer.className = 'bar-container';
+
+        const infoContainer = document.createElement('div');
+        infoContainer.className = 'student-info';
+        
+        const nameSpan = document.createElement('span');
+        nameSpan.className = 'student-name';
+        nameSpan.textContent = student.name ? student.name.toUpperCase() : 'НЕИЗВЕСТНЫЙ СТУДЕНТ';
+        
+        const pointsSpan = document.createElement('span');
+        pointsSpan.className = 'student-points';
+        pointsSpan.textContent = `${student.displayPoints || 0} БАЛЛОВ`;
+        
+        infoContainer.appendChild(nameSpan);
+        infoContainer.appendChild(pointsSpan);
+        
+        const barWrapper = document.createElement('div');
+        barWrapper.className = 'bar-wrapper';
+        
+        const bar = document.createElement('div');
+        bar.className = 'bar';
+        const width = Math.min(((student.displayPoints || 0) / 100) * 100, 100);
+        bar.style.width = `${width}%`;
+        
+        const emojiSpan = document.createElement('span');
+        emojiSpan.className = 'emoji';
+        emojiSpan.textContent = getEmoji(student.displayPoints || 0);
+        
+        barWrapper.appendChild(bar);
+        barWrapper.appendChild(emojiSpan);
+        
+        barContainer.appendChild(infoContainer);
+        barContainer.appendChild(barWrapper);
+        
+        container.appendChild(barContainer);
+    });
+}
+
+// ========== ФУНКЦИИ ПРЕПОДАВАТЕЛЕЙ ==========
+
+function checkPassword() {
+    console.log('🔐 Проверка пароля...');
+    const password = document.getElementById('teacherPassword').value;
+    
+    if (password === TEACHER_PASSWORD) {
+        document.getElementById('loginSection').style.display = 'none';
+        document.getElementById('teacherPanel').style.display = 'block';
+        console.log('✅ Пароль верен');
+        loadTeachersForPanel();
+    } else {
+        alert('❌ Неверный пароль');
+    }
+}
+
+function loadTeachersForPanel() {
+    console.log('🔄 Загрузка преподавателей для панели...');
+    const teachers = [...new Set(studentsData.map(s => s.teacher).filter(t => t))];
+    const teacherSelect = document.getElementById('teacherSelect');
+    teacherSelect.innerHTML = '<option value="">-- Выберите преподавателя --</option>';
+    
+    teachers.forEach(teacher => {
+        const option = document.createElement('option');
+        option.value = teacher;
+        option.textContent = teacher;
+        teacherSelect.appendChild(option);
+    });
+}
+
+function loadGroups() {
+    const teacher = document.getElementById('teacherSelect').value;
+    const groupSelect = document.getElementById('groupSelect');
+    
+    if (!teacher) {
+        groupSelect.innerHTML = '<option value="">-- Сначала выберите преподавателя --</option>';
+        groupSelect.disabled = true;
+        return;
+    }
+    
+    // Загружаем группы на основе выбранного преподавателя
+    const groups = [...new Set(studentsData
+        .filter(student => student.teacher === teacher)
+        .map(student => student.group)
+        .filter(g => g))];
+    
+    groupSelect.innerHTML = '<option value="">-- Выберите группу --</option>';
+    
+    groups.forEach(group => {
+        const option = document.createElement('option');
+        option.value = group;
+        option.textContent = group;
+        groupSelect.appendChild(option);
+    });
+    groupSelect.disabled = false;
+}
+
+function loadStudentsForPanel() {
+    const teacher = document.getElementById('teacherSelect').value;
+    const group = document.getElementById('groupSelect').value;
+    const studentSelect = document.getElementById('studentSelect');
+    
+    if (!teacher || !group) {
+        studentSelect.innerHTML = '<option value="">-- Сначала выберите группу --</option>';
+        studentSelect.disabled = true;
+        return;
+    }
+    
+    // Загружаем студентов на основе группы
+    const groupStudents = studentsData.filter(student => 
+        student.teacher === teacher && student.group === group
+    );
+    
+    studentSelect.innerHTML = '<option value="">-- Выберите ученика --</option>';
+    
+    groupStudents.forEach(student => {
+        const option = document.createElement('option');
+        option.value = student.id; // Используем ID вместо имени
+        option.textContent = student.name;
+        studentSelect.appendChild(option);
+    });
+    studentSelect.disabled = false;
+}
+
+function loadCurrentPoints() {
+    const studentId = document.getElementById('studentSelect').value;
+    const date = document.getElementById('dateSelect').value;
+    
+    if (!studentId || !date) {
+        document.getElementById('currentPointsDisplay').textContent = '0';
+        document.getElementById('pointsInput').value = '0';
+        return;
+    }
+    
+    // Ищем баллы студента за выбранную дату
+    const student = studentsData.find(s => s.id == studentId);
+    if (student && student.dates) {
+        const formattedDate = formatDateForInput(date);
+        const points = student.dates[formattedDate] || 0;
+        document.getElementById('currentPointsDisplay').textContent = points;
+        document.getElementById('pointsInput').value = points;
+    } else {
+        document.getElementById('currentPointsDisplay').textContent = '0';
+        document.getElementById('pointsInput').value = '0';
+    }
+}
+
+function formatDateForInput(dateString) {
+    // Конвертируем из YYYY-MM-DD в DD.MM.YYYY
+    const parts = dateString.split('-');
+    if (parts.length === 3) {
+        return `${parts[2]}.${parts[1]}.${parts[0]}`;
+    }
+    return dateString;
+}
+
+function updatePoints() {
+    const studentId = document.getElementById('studentSelect').value;
+    const date = document.getElementById('dateSelect').value;
+    const points = document.getElementById('pointsInput').value;
+    
+    if (!studentId || !date || points === '') {
+        showMessage('Заполните все поля: преподаватель, группа, дата, ученик и баллы', 'error');
+        return;
+    }
+    
+    if (points < 0 || points > 100) {
+        showMessage('Баллы должны быть от 0 до 100', 'error');
+        return;
+    }
+    
+    showMessage('🔄 Сохранение баллов...', 'info');
+    
+    // В демо-режиме просто показываем сообщение
+    setTimeout(() => {
+        showMessage('✅ Баллы успешно сохранены! (демо-режим)', 'success');
+        document.getElementById('pointsInput').value = '0';
+        loadCurrentPoints();
+    }, 1000);
+}
+
+function showMessage(text, type) {
+    const messageDiv = document.getElementById('message');
+    if (!messageDiv) return;
+    
+    messageDiv.textContent = text;
+    const colors = {
+        success: '#2a5a2a',
+        error: '#5a2a2a', 
+        info: '#2a2a5a'
+    };
+    messageDiv.style.backgroundColor = colors[type] || '#2a2a2a';
+    messageDiv.style.color = type === 'success' ? '#90ee90' : 
+                           type === 'error' ? '#ff6b6b' : '#6b6bff';
+    messageDiv.style.padding = '10px';
+    messageDiv.style.borderRadius = '5px';
+    messageDiv.style.marginTop = '15px';
+    
+    setTimeout(() => {
+        messageDiv.textContent = '';
+        messageDiv.style.backgroundColor = '';
+    }, 5000);
+}
+
+// ========== ОБРАБОТЧИКИ СОБЫТИЙ ==========
+
+function initEventListeners() {
+    // Кнопка прокрутки
+    document.getElementById('scrollButton').addEventListener('click', () => {
+        document.querySelector('.content').scrollIntoView({ behavior: 'smooth' });
+    });
+    
+    // Кнопка для преподавателей
+    document.getElementById('teacherButton').addEventListener('click', () => {
+        const loginSection = document.getElementById('loginSection');
+        if (loginSection) {
+            loginSection.style.display = 'block';
+            loginSection.scrollIntoView({ behavior: 'smooth' });
+        }
+    });
+    
+    // Фильтр групп
+    document.getElementById('groupFilter').addEventListener('change', (e) => {
+        currentGroup = e.target.value;
+        displayStudents();
+    });
+    
+    // Поиск
+    document.getElementById('searchInput').addEventListener('input', (e) => {
+        searchQuery = e.target.value.trim();
+        displayStudents();
+    });
+    
+    // Фильтры по времени
+    document.querySelectorAll('.time-filters button').forEach(button => {
+        button.addEventListener('click', (e) => {
+            currentPeriod = e.target.dataset.period;
+            document.querySelectorAll('.time-filters button').forEach(btn => 
+                btn.classList.remove('active'));
+            e.target.classList.add('active');
+            displayStudents();
         });
-    }
+    });
+    
+    // Обработчики для панели преподавателя
+    document.getElementById('teacherSelect').addEventListener('change', loadGroups);
+    document.getElementById('groupSelect').addEventListener('change', loadStudentsForPanel);
+    document.getElementById('studentSelect').addEventListener('change', loadCurrentPoints);
+    document.getElementById('dateSelect').addEventListener('change', loadCurrentPoints);
+}
 
-    function calculatePeriodPoints(student, period) {
-        if (period === 'all') return student.total;
-        return student.total; // Упрощенная версия без фильтрации по датам
-    }
-
-    function displayStudents() {
-        const container = document.getElementById('students');
-        const filtered = studentsData
-            .filter(student => {
-                const groupMatch = currentGroup === 'all' || student.group === currentGroup;
-                const nameMatch = student.name.toLowerCase().includes(searchQuery.toLowerCase());
-                return groupMatch && nameMatch;
-            })
-            .map(student => ({
-                ...student,
-                displayPoints: calculatePeriodPoints(student, currentPeriod)
-            }))
-            .sort((a, b) => b.displayPoints - a.displayPoints);
-
-        container.innerHTML = '';
-
-        if (filtered.length === 0) {
-            container.innerHTML = '<div style="text-align: center; padding: 20px; color: #ccc;">Студенты не найдены</div>';
-            return;
-        }
-
-        filtered.forEach(student => {
-            const barContainer = document.createElement('div');
-            barContainer.className = 'bar-container';
-
-            const infoContainer = document.createElement('div');
-            infoContainer.className = 'student-info';
-            
-            const nameSpan = document.createElement('span');
-            nameSpan.className = 'student-name';
-            nameSpan.textContent = student.name.toUpperCase();
-            
-            const pointsSpan = document.createElement('span');
-            pointsSpan.className = 'student-points';
-            pointsSpan.textContent = `${student.displayPoints} БАЛЛОВ`;
-            
-            infoContainer.appendChild(nameSpan);
-            infoContainer.appendChild(pointsSpan);
-            
-            const barWrapper = document.createElement('div');
-            barWrapper.className = 'bar-wrapper';
-            
-            const bar = document.createElement('div');
-            bar.className = 'bar';
-            const width = Math.min((student.displayPoints / 100) * 100, 100);
-            bar.style.width = `${width}%`;
-            
-            const emojiSpan = document.createElement('span');
-            emojiSpan.className = 'emoji';
-            emojiSpan.textContent = getEmoji(student.displayPoints);
-            
-            barWrapper.appendChild(bar);
-            barWrapper.appendChild(emojiSpan);
-            
-            barContainer.appendChild(infoContainer);
-            barContainer.appendChild(barWrapper);
-            
-            container.appendChild(barContainer);
-        });
-    }
-
-    // ========== ФУНКЦИИ ПРЕПОДАВАТЕЛЕЙ ==========
-
-    function checkPassword() {
-        console.log('🔐 Проверка пароля...');
-        const password = document.getElementById('teacherPassword').value;
-        
-        if (password === TEACHER_PASSWORD) {
-            document.getElementById('loginSection').style.display = 'none';
-            document.getElementById('teacherPanel').style.display = 'block';
-            console.log('✅ Пароль верен');
-            // Для демо - сразу загружаем тестовых преподавателей
-            loadSampleTeachers();
-        } else {
-            alert('❌ Неверный пароль');
-        }
-    }
-
-    function loadSampleTeachers() {
-        console.log('🔄 Загрузка тестовых преподавателей...');
-        const sampleTeachers = ['Иванов И.И.', 'Петрова А.С.', 'Сидоров В.К.'];
-        const teacherSelect = document.getElementById('teacherSelect');
-        teacherSelect.innerHTML = '<option value="">-- Выберите преподавателя --</option>';
-        
-        sampleTeachers.forEach(teacher => {
-            const option = document.createElement('option');
-            option.value = teacher;
-            option.textContent = teacher;
-            teacherSelect.appendChild(option);
-        });
-    }
-
-    function loadGroups() {
-        const teacher = document.getElementById('teacherSelect').value;
-        const groupSelect = document.getElementById('groupSelect');
-        
-        if (!teacher) {
-            groupSelect.innerHTML = '<option value="">-- Сначала выберите преподавателя --</option>';
-            groupSelect.disabled = true;
-            return;
-        }
-        
-        // Для демо - загружаем группы на основе выбранного преподавателя
-        const groups = ['Группа A', 'Группа B', 'Группа C'];
-        groupSelect.innerHTML = '<option value="">-- Выберите группу --</option>';
-        
-        groups.forEach(group => {
-            const option = document.createElement('option');
-            option.value = group;
-            option.textContent = group;
-            groupSelect.appendChild(option);
-        });
-        groupSelect.disabled = false;
-    }
-
-    function loadStudents() {
-        const teacher = document.getElementById('teacherSelect').value;
-        const group = document.getElementById('groupSelect').value;
-        const studentSelect = document.getElementById('studentSelect');
-        
-        if (!teacher || !group) {
-            studentSelect.innerHTML = '<option value="">-- Сначала выберите группу --</option>';
-            studentSelect.disabled = true;
-            return;
-        }
-        
-        // Для демо - загружаем студентов на основе группы
-        const groupStudents = studentsData.filter(student => student.group === group);
-        studentSelect.innerHTML = '<option value="">-- Выберите ученика --</option>';
-        
-        groupStudents.forEach(student => {
-            const option = document.createElement('option');
-            option.value = student.name;
-            option.textContent = student.name;
-            studentSelect.appendChild(option);
-        });
-        studentSelect.disabled = false;
-    }
-
-    function loadCurrentPoints() {
-        const studentName = document.getElementById('studentSelect').value;
-        const date = document.getElementById('dateSelect').value;
-        
-        if (!studentName || !date) {
-            document.getElementById('currentPointsDisplay').textContent = '0';
-            document.getElementById('pointsInput').value = '0';
-            return;
-        }
-        
-        // Для демо - показываем случайные баллы
-        const randomPoints = Math.floor(Math.random() * 20);
-        document.getElementById('currentPointsDisplay').textContent = randomPoints;
-        document.getElementById('pointsInput').value = randomPoints;
-    }
-
-    function updatePoints() {
-        const studentName = document.getElementById('studentSelect').value;
-        const date = document.getElementById('dateSelect').value;
-        const points = document.getElementById('pointsInput').value;
-        
-        if (!studentName || !date || points === '') {
-            showMessage('Заполните все поля: преподаватель, группа, дата, ученик и баллы', 'error');
-            return;
-        }
-        
-        if (points < 0 || points > 100) {
-            showMessage('Баллы должны быть от 0 до 100', 'error');
-            return;
-        }
-        
-        showMessage('🔄 Сохранение баллов...', 'success');
-        
-        setTimeout(() => {
-            showMessage('✅ Баллы успешно сохранены! (демо-режим)', 'success');
-            document.getElementById('pointsInput').value = '0';
-            loadCurrentPoints();
-        }, 1000);
-    }
-
-    function showMessage(text, type) {
-        const messageDiv = document.getElementById('message');
-        if (!messageDiv) return;
-        
-        messageDiv.textContent = text;
-        messageDiv.style.backgroundColor = type === 'success' ? '#2a5a2a' : '#5a2a2a';
-        messageDiv.style.color = type === 'success' ? '#90ee90' : '#ff6b6b';
-        messageDiv.style.padding = '10px';
-        messageDiv.style.borderRadius = '5px';
-        messageDiv.style.marginTop = '15px';
-        
-        setTimeout(() => {
-            messageDiv.textContent = '';
-            messageDiv.style.backgroundColor = '';
-        }, 5000);
-    }
 // ========== ИНИЦИАЛИЗАЦИЯ ==========
 
-    document.addEventListener('DOMContentLoaded', function() {
-        initEventListeners();
-        
-        // Устанавливаем сегодняшнюю дату по умолчанию
-        const dateSelect = document.getElementById('dateSelect');
-        if (dateSelect) {
-            const today = new Date().toISOString().split('T')[0];
-            dateSelect.value = today;
-        }
-        
-        // Загрузка при старте - ВОТ ЭТА СТРОКА ОЧЕНЬ ВАЖНА!
-        loadStudents();
-    });
-    // ========== ОБРАБОТЧИКИ СОБЫТИЙ ==========
-
-    function initEventListeners() {
-        // Кнопка прокрутки
-        document.getElementById('scrollButton').addEventListener('click', () => {
-            document.querySelector('.content').scrollIntoView({ behavior: 'smooth' });
-        });
-        
-        // Кнопка для преподавателей
-        document.getElementById('teacherButton').addEventListener('click', () => {
-            const loginSection = document.getElementById('loginSection');
-            if (loginSection) {
-                loginSection.style.display = 'block';
-                loginSection.scrollIntoView({ behavior: 'smooth' });
-            }
-        });
-        
-        // Фильтр групп
-        document.getElementById('groupFilter').addEventListener('change', (e) => {
-            currentGroup = e.target.value;
-            displayStudents();
-        });
-        
-        // Поиск
-        document.getElementById('searchInput').addEventListener('input', (e) => {
-            searchQuery = e.target.value.trim();
-            displayStudents();
-        });
-        
-        // Фильтры по времени
-        document.querySelectorAll('.time-filters button').forEach(button => {
-            button.addEventListener('click', (e) => {
-                currentPeriod = e.target.dataset.period;
-                document.querySelectorAll('.time-filters button').forEach(btn => 
-                    btn.classList.remove('active'));
-                e.target.classList.add('active');
-                displayStudents();
-            });
-        });
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('🚀 Страница загружена, инициализация...');
+    
+    initEventListeners();
+    
+    // Устанавливаем сегодняшнюю дату по умолчанию
+    const dateSelect = document.getElementById('dateSelect');
+    if (dateSelect) {
+        const today = new Date().toISOString().split('T')[0];
+        dateSelect.value = today;
     }
- 
+    
+    // ЗАГРУЗКА ДАННЫХ ПРИ СТАРТЕ - ЭТО ОЧЕНЬ ВАЖНО!
+    loadStudents();
+});
     
 </script>
 </body>
