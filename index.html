@@ -208,131 +208,6 @@
         .time-filters button:hover {
             background-color: #7a00b3;
         }
-
-        /* Стили для панели преподавателя */
-        .teacher-panel {
-            background-color: #2a2a2a;
-            padding: 20px;
-            margin: 20px 0;
-            border-radius: 10px;
-            border-left: 4px solid #9400d3;
-        }
-
-        .teacher-form {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-            margin-bottom: 20px;
-        }
-
-        .form-group {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .form-group label {
-            margin-bottom: 5px;
-            color: #cccccc;
-            font-weight: bold;
-        }
-
-        .form-group input, .form-group select {
-            padding: 12px;
-            background-color: #1a1a1a;
-            border: 1px solid #9400d3;
-            border-radius: 5px;
-            color: white;
-            font-size: 14px;
-        }
-
-        .form-group input:focus, .form-group select:focus {
-            outline: none;
-            border-color: #00ff00;
-            box-shadow: 0 0 5px rgba(0, 255, 0, 0.3);
-        }
-
-        .points-display {
-            grid-column: span 2;
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-            margin: 10px 0;
-        }
-
-        .current-points, .new-points {
-            background-color: #2a2a2a;
-            padding: 15px;
-            border-radius: 8px;
-            border-left: 4px solid #9400d3;
-        }
-
-        .points-value {
-            font-size: 24px;
-            font-weight: bold;
-            color: #00ff00;
-            text-align: center;
-            margin-top: 5px;
-        }
-
-        .new-points input {
-            width: 100%;
-            margin-top: 5px;
-            padding: 10px;
-        }
-
-        .submit-btn {
-            grid-column: span 2;
-            padding: 15px;
-            font-size: 18px;
-            background: linear-gradient(135deg, #9400d3, #7a00b3);
-            color: white;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .submit-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(148, 0, 211, 0.4);
-        }
-
-        .login-form {
-            text-align: center;
-            padding: 30px;
-            background-color: #2a2a2a;
-            border-radius: 10px;
-            margin: 20px 0;
-            border-left: 4px solid #9400d3;
-        }
-
-        .login-form h3 {
-            margin-bottom: 20px;
-            color: #ffffff;
-        }
-
-        @media (max-width: 768px) {
-            .teacher-form {
-                grid-template-columns: 1fr;
-            }
-            .points-display {
-                grid-column: span 1;
-                grid-template-columns: 1fr;
-            }
-            .submit-btn {
-                grid-column: span 1;
-            }
-            .filters {
-                flex-direction: column;
-            }
-            .cover-buttons {
-                flex-direction: column;
-                align-items: center;
-            }
-            .cover-button {
-                width: 200px;
-            }
-        }
     </style>
 </head>
 <body>
@@ -340,71 +215,11 @@
         <h1>БАЛЛЫ УЧЕНИКОВ</h1>
         <div class="cover-buttons">
             <button id="scrollButton" class="cover-button">УЗНАТЬ СВОЙ БАЛЛ</button>
-            <button id="teacherButton" class="cover-button">ДЛЯ ПРЕПОДАВАТЕЛЕЙ</button>
             <a href="https://learn.algoritmika.org/login" target="_blank" class="cover-button">ПЕРЕЙТИ НА ПЛАТФОРМУ</a>
         </div>
     </div>
 
     <div class="content">
-        <!-- Форма входа для преподавателей -->
-        <div id="loginSection" class="login-form" style="display: none;">
-            <h3>🔐 Доступ для преподавателей</h3>
-            <input type="password" id="teacherPassword" placeholder="Введите пароль" 
-                   style="padding: 12px; margin: 15px; width: 200px; border-radius: 5px; border: 1px solid #9400d3; background: #1a1a1a; color: white;">
-            <button onclick="checkPassword()" class="cover-button" style="margin: 10px;">Войти</button>
-        </div>
-
-        <!-- Панель преподавателя -->
-        <div id="teacherPanel" class="teacher-panel" style="display: none;">
-            <h3>📝 Добавление/изменение баллов</h3>
-            
-            <div class="teacher-form">
-                <div class="form-group">
-                    <label for="teacherSelect">👨‍🏫 Преподаватель:</label>
-                    <select id="teacherSelect" onchange="loadGroups()">
-                        <option value="">-- Выберите преподавателя --</option>
-                    </select>
-                </div>
-                
-                <div class="form-group">
-                    <label for="groupSelect">👥 Группа:</label>
-                    <select id="groupSelect" onchange="loadStudents()" disabled>
-                        <option value="">-- Сначала выберите преподавателя --</option>
-                    </select>
-                </div>
-                
-                <div class="form-group">
-                    <label for="dateSelect">📅 Дата занятия:</label>
-                    <input type="date" id="dateSelect" onchange="loadCurrentPoints()">
-                </div>
-                
-                <div class="form-group">
-                    <label for="studentSelect">🎓 Ученик:</label>
-                    <select id="studentSelect" onchange="loadCurrentPoints()" disabled>
-                        <option value="">-- Сначала выберите группу --</option>
-                    </select>
-                </div>
-                
-                <div class="points-display">
-                    <div class="current-points">
-                        <label>Текущие баллы за это занятие:</label>
-                        <div id="currentPointsDisplay" class="points-value">0</div>
-                    </div>
-                    
-                    <div class="new-points">
-                        <label for="pointsInput">Новые баллы:</label>
-                        <input type="number" id="pointsInput" min="0" max="100" value="0" 
-                               style="font-size: 18px; font-weight: bold; text-align: center; padding: 10px;">
-                    </div>
-                </div>
-                
-                <button class="submit-btn" onclick="updatePoints()">
-                    💾 Сохранить баллы
-                </button>
-            </div>
-            <div id="message" style="margin-top: 15px; padding: 10px; border-radius: 5px;"></div>
-        </div>
-
         <!-- Фильтры времени -->
         <div class="time-filters">
             <button data-period="all" class="active">Все время</button>
@@ -443,13 +258,11 @@
 <script>
     // Простой API URL (старый рабочий)
     const API_URL = 'https://script.google.com/macros/s/AKfycbwK295-WVyVp7zgqwaxt_wRSkosdxjXnKLaoN5SyLcGZQObBYY5rjMmQ0c4wgcc8Q_J1A/exec';
-    const TEACHER_PASSWORD = 'teacher123';
     
     let studentsData = [];
     let currentGroup = 'all';
     let currentPeriod = 'all';
     let searchQuery = '';
-    let currentStudents = [];
 
     function getEmoji(points) {
         if (points >= 0 && points < 20) return '👍';
@@ -467,35 +280,17 @@
             const response = await fetch(API_URL);
             const data = await response.json();
             
-            // Обрабатываем данные в зависимости от структуры
-            if (data.data) {
-                studentsData = data.data;
-            } else if (Array.isArray(data)) {
-                studentsData = data;
-            } else {
-                throw new Error('Неизвестный формат данных');
-            }
-            
+            // ПРОСТАЯ ОБРАБОТКА - как было в рабочей версии
+            studentsData = data;
             updateFilters();
             displayStudents();
             
         } catch (error) {
             console.error('Ошибка загрузки:', error);
-            // Загрузка тестовых данных при ошибке
-            loadSampleData();
+            // Только сообщение об ошибке, без демо-данных
+            document.getElementById('students').innerHTML = 
+                '<div style="text-align: center; padding: 20px; color: #ff4444;">Ошибка загрузки данных: ' + error.message + '</div>';
         }
-    }
-
-    function loadSampleData() {
-        studentsData = [
-            {name: 'Иванов Алексей', group: 'Группа A', total: 85, dates: {'01.12.2024': 10, '08.12.2024': 15}},
-            {name: 'Петрова Мария', group: 'Группа B', total: 92, dates: {'01.12.2024': 12, '08.12.2024': 18}},
-            {name: 'Сидоров Дмитрий', group: 'Группа A', total: 78, dates: {'01.12.2024': 8, '08.12.2024': 14}},
-            {name: 'Козлова Анна', group: 'Группа C', total: 88, dates: {'01.12.2024': 15, '08.12.2024': 20}},
-            {name: 'Николаев Петр', group: 'Группа B', total: 65, dates: {'01.12.2024': 5, '08.12.2024': 10}}
-        ];
-        updateFilters();
-        displayStudents();
     }
 
     function updateFilters() {
@@ -513,36 +308,7 @@
 
     function calculatePeriodPoints(student, period) {
         if (period === 'all') return student.total;
-        
-        if (!student.dates || Object.keys(student.dates).length === 0) {
-            return student.total;
-        }
-        
-        const now = new Date();
-        let startDate = new Date();
-        
-        switch(period) {
-            case 'day':
-                startDate.setHours(0, 0, 0, 0);
-                break;
-            case 'week':
-                startDate.setDate(now.getDate() - 7);
-                break;
-            case 'month':
-                startDate.setMonth(now.getMonth() - 1);
-                break;
-            default:
-                return student.total;
-        }
-        
-        return Object.entries(student.dates).reduce((sum, [dateStr, points]) => {
-            try {
-                const recordDate = new Date(dateStr.split('.').reverse().join('-'));
-                return (recordDate >= startDate && recordDate <= now) ? sum + points : sum;
-            } catch {
-                return sum;
-            }
-        }, 0);
+        return student.total; // Упрощенная версия без фильтрации по датам
     }
 
     function displayStudents() {
@@ -606,218 +372,36 @@
         });
     }
 
-    // ========== ФУНКЦИИ ПРЕПОДАВАТЕЛЕЙ ==========
-
-    function checkPassword() {
-        console.log('🔐 Проверка пароля...');
-        const password = document.getElementById('teacherPassword').value;
-        
-        if (password === TEACHER_PASSWORD) {
-            document.getElementById('loginSection').style.display = 'none';
-            document.getElementById('teacherPanel').style.display = 'block';
-            console.log('✅ Пароль верен');
-            // Для демо - сразу загружаем тестовых преподавателей
-            loadSampleTeachers();
-        } else {
-            alert('❌ Неверный пароль');
-        }
+    function scrollToContent() {
+        document.querySelector('.content').scrollIntoView({ behavior: 'smooth' });
     }
 
-    function loadSampleTeachers() {
-        console.log('🔄 Загрузка тестовых преподавателей...');
-        const sampleTeachers = ['Иванов И.И.', 'Петрова А.С.', 'Сидоров В.К.'];
-        const teacherSelect = document.getElementById('teacherSelect');
-        teacherSelect.innerHTML = '<option value="">-- Выберите преподавателя --</option>';
-        
-        sampleTeachers.forEach(teacher => {
-            const option = document.createElement('option');
-            option.value = teacher;
-            option.textContent = teacher;
-            teacherSelect.appendChild(option);
-        });
-    }
+    // Обработчики событий
+    document.getElementById('scrollButton').addEventListener('click', scrollToContent);
 
-    function loadGroups() {
-        const teacher = document.getElementById('teacherSelect').value;
-        const groupSelect = document.getElementById('groupSelect');
-        
-        if (!teacher) {
-            groupSelect.innerHTML = '<option value="">-- Сначала выберите преподавателя --</option>';
-            groupSelect.disabled = true;
-            return;
-        }
-        
-        // Для демо - загружаем группы на основе выбранного преподавателя
-        const groups = ['Группа A', 'Группа B', 'Группа C'];
-        groupSelect.innerHTML = '<option value="">-- Выберите группу --</option>';
-        
-        groups.forEach(group => {
-            const option = document.createElement('option');
-            option.value = group;
-            option.textContent = group;
-            groupSelect.appendChild(option);
-        });
-        groupSelect.disabled = false;
-    }
-
-    function loadStudents() {
-        const teacher = document.getElementById('teacherSelect').value;
-        const group = document.getElementById('groupSelect').value;
-        const studentSelect = document.getElementById('studentSelect');
-        
-        if (!teacher || !group) {
-            studentSelect.innerHTML = '<option value="">-- Сначала выберите группу --</option>';
-            studentSelect.disabled = true;
-            return;
-        }
-        
-        // Для демо - загружаем студентов на основе группы
-        const groupStudents = studentsData.filter(student => student.group === group);
-        studentSelect.innerHTML = '<option value="">-- Выберите ученика --</option>';
-        
-        groupStudents.forEach(student => {
-            const option = document.createElement('option');
-            option.value = student.name;
-            option.textContent = student.name;
-            studentSelect.appendChild(option);
-        });
-        studentSelect.disabled = false;
-    }
-
-    function loadCurrentPoints() {
-        const studentName = document.getElementById('studentSelect').value;
-        const date = document.getElementById('dateSelect').value;
-        
-        if (!studentName || !date) {
-            document.getElementById('currentPointsDisplay').textContent = '0';
-            document.getElementById('pointsInput').value = '0';
-            return;
-        }
-        
-        // Для демо - показываем случайные баллы
-        const randomPoints = Math.floor(Math.random() * 20);
-        document.getElementById('currentPointsDisplay').textContent = randomPoints;
-        document.getElementById('pointsInput').value = randomPoints;
-    }
-
-    function updatePoints() {
-        const studentName = document.getElementById('studentSelect').value;
-        const date = document.getElementById('dateSelect').value;
-        const points = document.getElementById('pointsInput').value;
-        
-        if (!studentName || !date || points === '') {
-            showMessage('Заполните все поля: преподаватель, группа, дата, ученик и баллы', 'error');
-            return;
-        }
-        
-        if (points < 0 || points > 100) {
-            showMessage('Баллы должны быть от 0 до 100', 'error');
-            return;
-        }
-        
-        showMessage('🔄 Сохранение баллов...', 'success');
-        
-        // Демо-режим - просто показываем сообщение
-        setTimeout(() => {
-            showMessage('✅ Баллы успешно сохранены! (демо-режим)', 'success');
-            document.getElementById('pointsInput').value = '0';
-            loadCurrentPoints();
-        }, 1000);
-    }
-    // Загрузка при старте
-    loadStudents();
-    function showMessage(text, type) {
-        const messageDiv = document.getElementById('message');
-        if (!messageDiv) return;
-        
-        messageDiv.textContent = text;
-        messageDiv.style.backgroundColor = type === 'success' ? '#2a5a2a' : '#5a2a2a';
-        messageDiv.style.color = type === 'success' ? '#90ee90' : '#ff6b6b';
-        messageDiv.style.padding = '10px';
-        messageDiv.style.borderRadius = '5px';
-        messageDiv.style.marginTop = '15px';
-        
-        setTimeout(() => {
-            messageDiv.textContent = '';
-            messageDiv.style.backgroundColor = '';
-        }, 5000);
-    }
-
-    // ========== ОБРАБОТЧИКИ СОБЫТИЙ ==========
-
-    function initEventListeners() {
-        // Кнопка прокрутки
-        const scrollButton = document.getElementById('scrollButton');
-        if (scrollButton) {
-            scrollButton.addEventListener('click', () => {
-                document.querySelector('.content').scrollIntoView({ behavior: 'smooth' });
-            });
-        }
-        
-        // Кнопка для преподавателей
-        const teacherButton = document.getElementById('teacherButton');
-        if (teacherButton) {
-            teacherButton.addEventListener('click', () => {
-                const loginSection = document.getElementById('loginSection');
-                if (loginSection) {
-                    loginSection.style.display = 'block';
-                    loginSection.scrollIntoView({ behavior: 'smooth' });
-                }
-            });
-        }
-        
-        // Фильтр групп
-        const groupFilter = document.getElementById('groupFilter');
-        if (groupFilter) {
-            groupFilter.addEventListener('change', (e) => {
-                currentGroup = e.target.value;
-                displayStudents();
-            });
-        }
-        
-        // Поиск
-        const searchInput = document.getElementById('searchInput');
-        if (searchInput) {
-            searchInput.addEventListener('input', (e) => {
-                searchQuery = e.target.value.trim();
-                displayStudents();
-            });
-        }
-        
-        // Фильтры по времени
-        const timeFilters = document.querySelectorAll('.time-filters button');
-        if (timeFilters.length > 0) {
-            timeFilters.forEach(button => {
-                button.addEventListener('click', (e) => {
-                    currentPeriod = e.target.dataset.period;
-                    document.querySelectorAll('.time-filters button').forEach(btn => 
-                        btn.classList.remove('active'));
-                    e.target.classList.add('active');
-                    displayStudents();
-                });
-            });
-        }
-    }
-
-    // ========== ИНИЦИАЛИЗАЦИЯ ==========
-
-    document.addEventListener('DOMContentLoaded', function() {
-        console.log('📄 DOM загружен');
-        
-        initEventListeners();
-        
-        // Устанавливаем сегодняшнюю дату по умолчанию
-        const dateSelect = document.getElementById('dateSelect');
-        if (dateSelect) {
-            const today = new Date().toISOString().split('T')[0];
-            dateSelect.value = today;
-        }
-        
-        // Загружаем данные
-        loadStudents();
-        
-        console.log('🎉 Приложение запущено');
+    document.getElementById('groupFilter').addEventListener('change', function(e) {
+        currentGroup = e.target.value;
+        displayStudents();
     });
+
+    document.getElementById('searchInput').addEventListener('input', function(e) {
+        searchQuery = e.target.value;
+        displayStudents();
+    });
+
+    // Фильтры по времени
+    document.querySelectorAll('.time-filters button').forEach(button => {
+        button.addEventListener('click', function(e) {
+            currentPeriod = e.target.dataset.period;
+            document.querySelectorAll('.time-filters button').forEach(btn => 
+                btn.classList.remove('active'));
+            e.target.classList.add('active');
+            displayStudents();
+        });
+    });
+
+    // Загрузка при старте - ВОТ ЭТА СТРОКА ОЧЕНЬ ВАЖНА!
+    loadStudents();
 </script>
 </body>
 </html>
