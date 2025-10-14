@@ -724,7 +724,8 @@
             loadCurrentPoints();
         }, 1000);
     }
-
+    // Загрузка при старте
+    loadStudents();
     function showMessage(text, type) {
         const messageDiv = document.getElementById('message');
         if (!messageDiv) return;
