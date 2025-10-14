@@ -693,7 +693,21 @@
             messageDiv.style.backgroundColor = '';
         }, 5000);
     }
+// ========== ИНИЦИАЛИЗАЦИЯ ==========
 
+    document.addEventListener('DOMContentLoaded', function() {
+        initEventListeners();
+        
+        // Устанавливаем сегодняшнюю дату по умолчанию
+        const dateSelect = document.getElementById('dateSelect');
+        if (dateSelect) {
+            const today = new Date().toISOString().split('T')[0];
+            dateSelect.value = today;
+        }
+        
+        // Загрузка при старте - ВОТ ЭТА СТРОКА ОЧЕНЬ ВАЖНА!
+        loadStudents();
+    });
     // ========== ОБРАБОТЧИКИ СОБЫТИЙ ==========
 
     function initEventListeners() {
@@ -734,23 +748,8 @@
             });
         });
     }
- // Загрузка при старте - ВОТ ЭТА СТРОКА ОЧЕНЬ ВАЖНА!
-    loadStudents();
-    // ========== ИНИЦИАЛИЗАЦИЯ ==========
-
-    document.addEventListener('DOMContentLoaded', function() {
-        initEventListeners();
-        
-        // Устанавливаем сегодняшнюю дату по умолчанию
-        const dateSelect = document.getElementById('dateSelect');
-        if (dateSelect) {
-            const today = new Date().toISOString().split('T')[0];
-            dateSelect.value = today;
-        }
-        
-        // Загрузка при старте - ВОТ ЭТА СТРОКА ОЧЕНЬ ВАЖНА!
-        loadStudents();
-    });
+ 
+    
 </script>
 </body>
 </html>
