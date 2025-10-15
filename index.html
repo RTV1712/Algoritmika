@@ -668,7 +668,7 @@ function loadStudentsForPanel() {
     studentSelect.disabled = false;
 }
 
-function loadCurrentPoints() {
+async function loadCurrentPoints() {
     const studentId = document.getElementById('studentSelect').value;
     const date = document.getElementById('dateSelect').value;
     
@@ -678,14 +678,31 @@ function loadCurrentPoints() {
         return;
     }
     
-    // Ищем баллы студента за выбранную дату
-    const student = studentsData.find(s => s.id == studentId);
-    if (student && student.dates) {
-        const formattedDate = formatDateForInput(date);
-        const points = student.dates[formattedDate] || 0;
-        document.getElementById('currentPointsDisplay').textContent = points;
-        document.getElementById('pointsInput').value = points;
-    } else {
+    try {
+        const response = await fetch(API_URL, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                action: 'getCurrentPoints',
+                studentId: studentId,
+                date: date
+            })
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            document.getElementById('currentPointsDisplay').textContent = result.currentPoints;
+            document.getElementById('pointsInput').value = result.currentPoints;
+        } else {
+            document.getElementById('currentPointsDisplay').textContent = '0';
+            document.getElementById('pointsInput').value = '0';
+        }
+        
+    } catch (error) {
+        console.error('Ошибка загрузки текущих баллов:', error);
         document.getElementById('currentPointsDisplay').textContent = '0';
         document.getElementById('pointsInput').value = '0';
     }
@@ -700,12 +717,14 @@ function formatDateForInput(dateString) {
     return dateString;
 }
 
-function updatePoints() {
+async function updatePoints() {
+    const teacher = document.getElementById('teacherSelect').value;
+    const group = document.getElementById('groupSelect').value;
     const studentId = document.getElementById('studentSelect').value;
     const date = document.getElementById('dateSelect').value;
     const points = document.getElementById('pointsInput').value;
     
-    if (!studentId || !date || points === '') {
+    if (!teacher || !group || !studentId || !date || points === '') {
         showMessage('Заполните все поля: преподаватель, группа, дата, ученик и баллы', 'error');
         return;
     }
@@ -717,12 +736,38 @@ function updatePoints() {
     
     showMessage('🔄 Сохранение баллов...', 'info');
     
-    // В демо-режиме просто показываем сообщение
-    setTimeout(() => {
-        showMessage('✅ Баллы успешно сохранены! (демо-режим)', 'success');
-        document.getElementById('pointsInput').value = '0';
-        loadCurrentPoints();
-    }, 1000);
+    try {
+        const response = await fetch(API_URL, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                action: 'updatePoints',
+                studentId: studentId,
+                date: date,
+                points: points,
+                teacher: teacher,
+                group: group
+            })
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            showMessage('✅ Баллы успешно сохранены!', 'success');
+            // Обновляем текущие баллы после сохранения
+            loadCurrentPoints();
+            // Перезагружаем общий список студентов чтобы обновить totals
+            loadStudents();
+        } else {
+            showMessage('❌ Ошибка сохранения: ' + (result.error || 'Неизвестная ошибка'), 'error');
+        }
+        
+    } catch (error) {
+        console.error('Ошибка при сохранении баллов:', error);
+        showMessage('❌ Ошибка соединения с сервером', 'error');
+    }
 }
 
 function showMessage(text, type) {
