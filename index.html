@@ -661,7 +661,7 @@ function loadStudentsForPanel() {
     
     groupStudents.forEach(student => {
         const option = document.createElement('option');
-        option.value = student.id; // Используем ID вместо имени
+        option.value = student.id; // Важно: используем числовой ID, а не имя
         option.textContent = student.name;
         studentSelect.appendChild(option);
     });
