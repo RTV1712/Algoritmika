@@ -368,56 +368,6 @@ input[type="date"]::-moz-calendar-picker-indicator {
     filter: invert(0.5) sepia(1) saturate(5) hue-rotate(250deg);
     cursor: pointer;
 }
-        /* Стили для всплывающей подсказки о баллах */
-.points-info-tooltip {
-    display: none;
-    position: absolute;
-    bottom: 100%;
-    left: 50%;
-    transform: translateX(-50%);
-    background: #2a2a2a;
-    border: 2px solid #9400d3;
-    border-radius: 8px;
-    padding: 15px;
-    width: 320px;
-    z-index: 1000;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.5);
-    text-align: left;
-}
-
-.points-info-tooltip h4 {
-    margin: 0 0 8px 0;
-    color: #ffffff;
-    text-align: center;
-}
-
-.points-info-tooltip ul {
-    margin: 0;
-    padding-left: 0; /* Убираем отступ слева */
-    list-style: none; /* Убираем стандартные маркеры */
-}
-
-.points-info-tooltip li {
-    margin-bottom: 5px;
-    color: #ffffff;
-    font-size: 14px;
-}
-
-/* Показывать подсказку при наведении */
-div[style*="cursor: help"]:hover .points-info-tooltip {
-    display: block;
-}
-
-/* Стрелочка у подсказки */
-.points-info-tooltip::after {
-    content: '';
-    position: absolute;
-    top: 100%;
-    left: 50%;
-    transform: translateX(-50%);
-    border: 8px solid transparent;
-    border-top-color: #9400d3;
-}
     </style>
 </head>
 <body>
@@ -441,25 +391,6 @@ div[style*="cursor: help"]:hover .points-info-tooltip {
 
         <!-- Панель преподавателя -->
         <div id="teacherPanel" class="teacher-panel" style="display: none;">
-            <!-- Добавьте в панель преподавателя перед формой -->
-<div style="margin-bottom: 15px; text-align: center;">
-    <div style="display: inline-block; position: relative; cursor: help;">
-        <span style="background: #9400d3; color: white; border-radius: 50%; width: 24px; height: 24px; display: inline-flex; align-items: center; justify-content: center; font-weight: bold;">?</span>
-        <div class="points-info-tooltip">
-            <h4>Критерии оценивания (макс. 7 баллов за занятие):</h4>
-            <ul>
-                <li>✅ Посещение - 1 балл</li>
-                <li>✅ Ответы на вопросы преподавателя - 1 балл</li>
-                <li>✅ Выполнение основных заданий (100%) - 1 балл</li>
-                <li>✅ Помощь преподавателю - 1 балл</li>
-                <li>✅ Выполнение бонусных заданий - 1 балл</li>
-                <li>✅ За выдающиеся успехи - 1 балл</li>
-                <li>✅ Выполнение всего модуля на 100% - 1 балл</li>
-            </ul>
-        </div>
-    </div>
-    <span style="margin-left: 10px; color: #ccc;">Наведите на иконку для информации о баллах</span>
-</div>
             <h3>📝 Журнал баллов - Групповое редактирование</h3>
             
             <div class="teacher-form">
