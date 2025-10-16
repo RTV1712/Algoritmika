@@ -15,15 +15,18 @@
         }
 
         .cover {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.5)), 
+                        url('https://img3.akspic.ru/crops/5/4/7/2/5/152745/152745-dizajn-graficeskij_dizajn-sinij-krasochnost-purpur-3840x2160.jpg');
             background-size: cover;
             background-position: center;
+            background-repeat: no-repeat;
             height: 100vh;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             text-align: center;
+            position: relative;
         }
 
         .cover h1 {
@@ -220,7 +223,7 @@
 
         .teacher-form {
             display: grid;
-            grid-template-columns: 1fr 1fr;
+            grid-template-columns: 1fr 1fr 1fr;
             gap: 15px;
             margin-bottom: 20px;
         }
@@ -251,37 +254,58 @@
             box-shadow: 0 0 5px rgba(0, 255, 0, 0.3);
         }
 
-        .points-display {
-            grid-column: span 2;
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-            margin: 10px 0;
-        }
-
-        .current-points, .new-points {
-            background-color: #2a2a2a;
-            padding: 15px;
+        /* Стили для таблицы журнала */
+        .journal-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: #2a2a2a;
             border-radius: 8px;
-            border-left: 4px solid #9400d3;
+            overflow: hidden;
+            margin: 20px 0;
         }
 
-        .points-value {
-            font-size: 24px;
+        .journal-table th {
+            background: #9400d3;
+            padding: 12px;
+            text-align: left;
+            color: white;
+            border-bottom: 2px solid #7a00b3;
+        }
+
+        .journal-table td {
+            padding: 10px 12px;
+            border-bottom: 1px solid #3a3a3a;
+            vertical-align: middle;
+        }
+
+        .journal-table tr:hover {
+            background: #3a3a3a;
+        }
+
+        .points-input {
+            width: 80px;
+            padding: 8px;
+            text-align: center;
+            background: #1a1a1a;
+            border: 1px solid #9400d3;
+            border-radius: 4px;
+            color: white;
+            font-size: 14px;
+        }
+
+        .points-input:focus {
+            outline: none;
+            border-color: #00ff00;
+            box-shadow: 0 0 5px rgba(0, 255, 0, 0.3);
+        }
+
+        .current-points {
+            text-align: center;
             font-weight: bold;
             color: #00ff00;
-            text-align: center;
-            margin-top: 5px;
-        }
-
-        .new-points input {
-            width: 100%;
-            margin-top: 5px;
-            padding: 10px;
         }
 
         .submit-btn {
-            grid-column: span 2;
             padding: 15px;
             font-size: 18px;
             background: linear-gradient(135deg, #9400d3, #7a00b3);
@@ -290,6 +314,8 @@
             border-radius: 8px;
             cursor: pointer;
             transition: all 0.3s ease;
+            width: 100%;
+            margin-top: 20px;
         }
 
         .submit-btn:hover {
@@ -315,12 +341,11 @@
             .teacher-form {
                 grid-template-columns: 1fr;
             }
-            .points-display {
-                grid-column: span 1;
-                grid-template-columns: 1fr;
+            .journal-table {
+                font-size: 14px;
             }
-            .submit-btn {
-                grid-column: span 1;
+            .points-input {
+                width: 60px;
             }
             .filters {
                 flex-direction: column;
@@ -333,54 +358,6 @@
                 width: 200px;
             }
         }
-        .journal-table {
-    width: 100%;
-    border-collapse: collapse;
-    background: #2a2a2a;
-    border-radius: 8px;
-    overflow: hidden;
-}
-
-.journal-table th {
-    background: #9400d3;
-    padding: 12px;
-    text-align: left;
-    color: white;
-    border-bottom: 2px solid #7a00b3;
-}
-
-.journal-table td {
-    padding: 10px 12px;
-    border-bottom: 1px solid #3a3a3a;
-    vertical-align: middle;
-}
-
-.journal-table tr:hover {
-    background: #3a3a3a;
-}
-
-.points-input {
-    width: 80px;
-    padding: 8px;
-    text-align: center;
-    background: #1a1a1a;
-    border: 1px solid #9400d3;
-    border-radius: 4px;
-    color: white;
-    font-size: 14px;
-}
-
-.points-input:focus {
-    outline: none;
-    border-color: #00ff00;
-    box-shadow: 0 0 5px rgba(0, 255, 0, 0.3);
-}
-
-.current-points {
-    text-align: center;
-    font-weight: bold;
-    color: #00ff00;
-}
     </style>
 </head>
 <body>
@@ -402,56 +379,56 @@
             <button onclick="checkPassword()" class="cover-button" style="margin: 10px;">Войти</button>
         </div>
 
-       <!-- Панель преподавателя -->
-<div id="teacherPanel" class="teacher-panel" style="display: none;">
-    <h3>📝 Журнал баллов - Групповое редактирование</h3>
-    
-    <div class="teacher-form">
-        <div class="form-group">
-            <label for="teacherSelect">👨‍🏫 Преподаватель:</label>
-            <select id="teacherSelect" onchange="loadGroups()">
-                <option value="">-- Выберите преподавателя --</option>
-            </select>
-        </div>
-        
-        <div class="form-group">
-            <label for="groupSelect">👥 Группа:</label>
-            <select id="groupSelect" onchange="loadGroupJournal()" disabled>
-                <option value="">-- Сначала выберите преподавателя --</option>
-            </select>
-        </div>
-        
-        <div class="form-group">
-            <label for="dateSelect">📅 Дата занятия:</label>
-            <input type="date" id="dateSelect" onchange="loadGroupJournal()">
-        </div>
-    </div>
+        <!-- Панель преподавателя -->
+        <div id="teacherPanel" class="teacher-panel" style="display: none;">
+            <h3>📝 Журнал баллов - Групповое редактирование</h3>
+            
+            <div class="teacher-form">
+                <div class="form-group">
+                    <label for="teacherSelect">👨‍🏫 Преподаватель:</label>
+                    <select id="teacherSelect" onchange="loadGroups()">
+                        <option value="">-- Выберите преподавателя --</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="groupSelect">👥 Группа:</label>
+                    <select id="groupSelect" onchange="loadGroupJournal()" disabled>
+                        <option value="">-- Сначала выберите преподавателя --</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="dateSelect">📅 Дата занятия:</label>
+                    <input type="date" id="dateSelect" onchange="loadGroupJournal()">
+                </div>
+            </div>
 
-    <!-- Таблица журнала -->
-    <div id="journalTable" style="display: none; margin-top: 20px;">
-        <h4>Журнал группы: <span id="currentGroupName"></span></h4>
-        <div style="overflow-x: auto;">
-            <table style="width: 100%; border-collapse: collapse; background: #2a2a2a; border-radius: 8px;">
-                <thead>
-                    <tr style="background: #9400d3;">
-                        <th style="padding: 12px; text-align: left; color: white; border-bottom: 2px solid #7a00b3;">Ученик</th>
-                        <th style="padding: 12px; text-align: center; color: white; border-bottom: 2px solid #7a00b3;">Текущие баллы</th>
-                        <th style="padding: 12px; text-align: center; color: white; border-bottom: 2px solid #7a00b3;">Новые баллы</th>
-                    </tr>
-                </thead>
-                <tbody id="journalTableBody">
-                    <!-- Строки будут добавляться через JavaScript -->
-                </tbody>
-            </table>
+            <!-- Таблица журнала -->
+            <div id="journalTable" style="display: none;">
+                <h4>Журнал группы: <span id="currentGroupName"></span></h4>
+                <div style="overflow-x: auto;">
+                    <table class="journal-table">
+                        <thead>
+                            <tr>
+                                <th style="width: 50%;">Ученик</th>
+                                <th style="width: 25%; text-align: center;">Текущие баллы</th>
+                                <th style="width: 25%; text-align: center;">Новые баллы</th>
+                            </tr>
+                        </thead>
+                        <tbody id="journalTableBody">
+                            <!-- Строки будут добавляться через JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+                
+                <button class="submit-btn" onclick="updateGroupPoints()">
+                    💾 Сохранить все изменения
+                </button>
+            </div>
+            
+            <div id="message" style="margin-top: 15px; padding: 10px; border-radius: 5px;"></div>
         </div>
-        
-        <button class="submit-btn" onclick="updateGroupPoints()" style="margin-top: 20px;">
-            💾 Сохранить все изменения
-        </button>
-    </div>
-    
-    <div id="message" style="margin-top: 15px; padding: 10px; border-radius: 5px;"></div>
-</div>
 
         <!-- Фильтры времени -->
         <div class="time-filters">
@@ -489,630 +466,517 @@
     </div>
 
 <script>
-    const BACKGROUND_IMAGE = 'https://img3.akspic.ru/crops/5/4/7/2/5/152745/152745-dizajn-graficeskij_dizajn-sinij-krasochnost-purpur-3840x2160.jpg';
     const API_URL = 'https://script.google.com/macros/s/AKfycby2mXhaiUOwqUsfXV34bkTU8BzAqV2tKUTWYGna4YITnUd-A3iDTDsfiiZ6mxZXmGSy/exec';
-const TEACHER_PASSWORD = 't123';
-document.querySelector('.cover').style.backgroundImage = `url(${BACKGROUND_IMAGE})`;
-let studentsData = [];
-let currentGroup = 'all';
-let currentPeriod = 'all';
-let searchQuery = '';
+    const TEACHER_PASSWORD = 't123';
+    
+    let studentsData = [];
+    let currentGroup = 'all';
+    let currentPeriod = 'all';
+    let searchQuery = '';
 
-function getEmoji(points) {
-    if (points >= 0 && points < 20) return '👍';
-    if (points >= 20 && points < 40) return '😊';
-    if (points >= 40 && points < 60) return '⭐';
-    if (points >= 60 && points < 80) return '🚀';
-    if (points >= 80 && points <= 100) return '🔥';
-    return '';
-}
-// Загрузка журнала группы
-async function loadGroupJournal() {
-    const teacher = document.getElementById('teacherSelect').value;
-    const group = document.getElementById('groupSelect').value;
-    const date = document.getElementById('dateSelect').value;
-    
-    if (!teacher || !group || !date) {
-        document.getElementById('journalTable').style.display = 'none';
-        return;
+    function getEmoji(points) {
+        if (points >= 0 && points < 20) return '👍';
+        if (points >= 20 && points < 40) return '😊';
+        if (points >= 40 && points < 60) return '⭐';
+        if (points >= 60 && points < 80) return '🚀';
+        if (points >= 80 && points <= 100) return '🔥';
+        return '';
     }
-    
-    try {
-        showMessage('🔄 Загрузка данных группы...', 'info');
-        
-        // Показываем таблицу
-        document.getElementById('currentGroupName').textContent = group;
-        document.getElementById('journalTable').style.display = 'block';
-        
-        // Получаем студентов группы
-        const groupStudents = studentsData.filter(student => 
-            student.teacher === teacher && student.group === group
-        );
-        
-        // Загружаем баллы для каждого студента
-        await loadStudentsPoints(groupStudents, date);
-        
-        showMessage('✅ Данные загружены', 'success');
-        
-    } catch (error) {
-        console.error('Ошибка загрузки журнала:', error);
-        showMessage('❌ Ошибка загрузки данных', 'error');
-    }
-}
 
-    // Загрузка баллов для студентов группы
-async function loadStudentsPoints(students, date) {
-    const tableBody = document.getElementById('journalTableBody');
-    tableBody.innerHTML = '';
-    
-    for (const student of students) {
+    // Исправленная функция загрузки данных
+    async function loadStudents() {
         try {
-            // Загружаем текущие баллы через API
-            const url = `${API_URL}?action=getCurrentPoints&studentId=${student.id}&date=${encodeURIComponent(date)}`;
-            const response = await fetch(url);
-            const result = await response.json();
+            console.log('🔄 Загрузка данных с API...');
+            document.getElementById('students').innerHTML = '<div style="text-align: center; padding: 20px; color: #ccc;">Загрузка данных...</div>';
             
-            const currentPoints = result.success ? result.currentPoints : 0;
+            const response = await fetch(API_URL);
+            console.log('📡 Ответ получен:', response);
             
-            // Создаем строку таблицы
-            const row = document.createElement('tr');
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
             
-            // Столбец с именем
-            const nameCell = document.createElement('td');
-            nameCell.textContent = student.name;
-            nameCell.style.padding = '10px 12px';
+            const data = await response.json();
+            console.log('📊 Данные от API:', data);
             
-            // Столбец с текущими баллами
-            const currentCell = document.createElement('td');
-            currentCell.innerHTML = `<div class="current-points">${currentPoints}</div>`;
-            currentCell.style.textAlign = 'center';
-            currentCell.style.padding = '10px 12px';
+            // ПРАВИЛЬНАЯ ОБРАБОТКА ДАННЫХ - ваш API возвращает {success: true, data: [...]}
+            if (data.success && data.data) {
+                studentsData = data.data;
+                console.log('✅ Загружено студентов:', studentsData.length);
+                console.log('📝 Пример студента:', studentsData[0]);
+            } else {
+                throw new Error('Неверный формат данных от сервера: ' + JSON.stringify(data));
+            }
             
-            // Столбец для ввода новых баллов
-            const inputCell = document.createElement('td');
-            inputCell.style.textAlign = 'center';
-            inputCell.style.padding = '10px 12px';
-            const input = document.createElement('input');
-            input.type = 'number';
-            input.className = 'points-input';
-            input.min = '0';
-            input.max = '100';
-            input.value = currentPoints;
-            input.dataset.studentId = student.id;
-            input.dataset.studentName = student.name;
-            inputCell.appendChild(input);
-            
-            row.appendChild(nameCell);
-            row.appendChild(currentCell);
-            row.appendChild(inputCell);
-            
-            tableBody.appendChild(row);
+            updateFilters();
+            displayStudents();
             
         } catch (error) {
-            console.error(`Ошибка загрузки баллов для ${student.name}:`, error);
+            console.error('❌ Ошибка загрузки:', error);
+            document.getElementById('students').innerHTML = 
+                '<div style="text-align: center; padding: 20px; color: #ff4444;">' +
+                'Ошибка загрузки данных: ' + error.message + 
+                '</div>';
         }
     }
-}
 
-// Сохранение всех баллов группы
-async function updateGroupPoints() {
-    const teacher = document.getElementById('teacherSelect').value;
-    const group = document.getElementById('groupSelect').value;
-    const date = document.getElementById('dateSelect').value;
-    
-    if (!teacher || !group || !date) {
-        showMessage('Заполните все поля: преподаватель, группа и дата', 'error');
-        return;
-    }
-    
-    const inputs = document.querySelectorAll('.points-input');
-    const updates = [];
-    
-    // Собираем все изменения
-    inputs.forEach(input => {
-        const studentId = input.dataset.studentId;
-        const studentName = input.dataset.studentName;
-        const points = input.value;
+    function updateFilters() {
+        const groupFilter = document.getElementById('groupFilter');
+        const groups = [...new Set(studentsData.map(s => s.group))];
         
-        if (points !== '' && points >= 0 && points <= 100) {
-            updates.push({
-                studentId: studentId,
-                studentName: studentName,
-                points: points
-            });
+        groupFilter.innerHTML = '<option value="all">ВСЕ ГРУППЫ</option>';
+        groups.forEach(group => {
+            if (group) { // Проверяем, что группа не пустая
+                const option = document.createElement('option');
+                option.value = group;
+                option.textContent = group;
+                groupFilter.appendChild(option);
+            }
+        });
+    }
+
+    function calculatePeriodPoints(student, period) {
+        if (period === 'all') {
+            return student.total;
         }
-    });
-    
-    if (updates.length === 0) {
-        showMessage('Нет данных для сохранения', 'error');
-        return;
-    }
-    
-    showMessage(`🔄 Сохранение ${updates.length} записей...`, 'info');
-    
-    try {
-        let successCount = 0;
-        let errorCount = 0;
         
-        // Сохраняем каждую запись
-        for (const update of updates) {
-            try {
-                const url = `${API_URL}?action=updatePoints&studentId=${update.studentId}&date=${encodeURIComponent(date)}&points=${update.points}&teacher=${encodeURIComponent(teacher)}&group=${encodeURIComponent(group)}`;
-                const response = await fetch(url);
-                const result = await response.json();
-                
-                if (result.success) {
-                    successCount++;
-                } else {
-                    errorCount++;
-                    console.error(`Ошибка сохранения для ${update.studentName}:`, result.error);
-                }
-            } catch (error) {
-                errorCount++;
-                console.error(`Ошибка сохранения для ${update.studentName}:`, error);
+        if (!student.dates || Object.keys(student.dates).length === 0) {
+            return 0;
+        }
+        
+        const now = new Date();
+        let startDate;
+        
+        switch(period) {
+            case 'day':
+                startDate = new Date(now);
+                startDate.setDate(now.getDate() - 1);
+                break;
+            case 'week':
+                startDate = new Date(now);
+                startDate.setDate(now.getDate() - 7);
+                break;
+            case 'month':
+                startDate = new Date(now);
+                startDate.setMonth(now.getMonth() - 1);
+                break;
+            default:
+                return student.total;
+        }
+        
+        // Суммируем баллы за выбранный период
+        let periodPoints = 0;
+        
+        for (const [dateString, points] of Object.entries(student.dates)) {
+            const pointsDate = parseDateString(dateString);
+            if (pointsDate && pointsDate >= startDate && pointsDate <= now) {
+                periodPoints += points;
             }
         }
         
-        if (errorCount === 0) {
-            showMessage(`✅ Успешно сохранено ${successCount} записей`, 'success');
-            // Обновляем общий список студентов
-            loadStudents();
-            // Перезагружаем журнал чтобы показать обновленные текущие баллы
-            setTimeout(() => loadGroupJournal(), 1000);
-        } else {
-            showMessage(`✅ Сохранено ${successCount} записей, ❌ ошибок: ${errorCount}`, 'warning');
-        }
-        
-    } catch (error) {
-        console.error('Ошибка при сохранении группы:', error);
-        showMessage('❌ Ошибка сохранения данных', 'error');
+        return periodPoints;
     }
-}
-// Исправленная функция загрузки данных
-async function loadStudents() {
-    try {
-        console.log('🔄 Загрузка данных с API...');
-        document.getElementById('students').innerHTML = '<div style="text-align: center; padding: 20px; color: #ccc;">Загрузка данных...</div>';
-        
-        const response = await fetch(API_URL);
-        console.log('📡 Ответ получен:', response);
-        
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        
-        const data = await response.json();
-        console.log('📊 Данные от API:', data);
-        
-        // ПРАВИЛЬНАЯ ОБРАБОТКА ДАННЫХ - ваш API возвращает {success: true, data: [...]}
-        if (data.success && data.data) {
-            studentsData = data.data;
-            console.log('✅ Загружено студентов:', studentsData.length);
-            console.log('📝 Пример студента:', studentsData[0]);
-        } else {
-            throw new Error('Неверный формат данных от сервера: ' + JSON.stringify(data));
-        }
-        
-        updateFilters();
-        displayStudents();
-        
-    } catch (error) {
-        console.error('❌ Ошибка загрузки:', error);
-        document.getElementById('students').innerHTML = 
-            '<div style="text-align: center; padding: 20px; color: #ff4444;">' +
-            'Ошибка загрузки данных: ' + error.message + 
-            '</div>';
-    }
-}
 
-function updateFilters() {
-    const groupFilter = document.getElementById('groupFilter');
-    const groups = [...new Set(studentsData.map(s => s.group))];
-    
-    groupFilter.innerHTML = '<option value="all">ВСЕ ГРУППЫ</option>';
-    groups.forEach(group => {
-        if (group) { // Проверяем, что группа не пустая
+    // Вспомогательная функция для парсинга даты из формата "DD.MM.YYYY"
+    function parseDateString(dateString) {
+        if (!dateString) return null;
+        
+        try {
+            const parts = dateString.split('.');
+            if (parts.length === 3) {
+                const day = parseInt(parts[0], 10);
+                const month = parseInt(parts[1], 10) - 1; // Месяцы от 0 до 11
+                const year = parseInt(parts[2], 10);
+                
+                const date = new Date(year, month, day);
+                // Проверяем, что дата валидна
+                if (!isNaN(date.getTime()) && 
+                    date.getDate() === day && 
+                    date.getMonth() === month && 
+                    date.getFullYear() === year) {
+                    return date;
+                }
+            }
+        } catch (error) {
+            console.warn('Ошибка парсинга даты:', dateString, error);
+        }
+        
+        return null;
+    }
+
+    function displayStudents() {
+        const container = document.getElementById('students');
+        
+        console.log('🔄 Отображение студентов. Период:', currentPeriod);
+        
+        const filtered = studentsData
+            .filter(student => {
+                const groupMatch = currentGroup === 'all' || student.group === currentGroup;
+                const nameMatch = student.name && student.name.toLowerCase().includes(searchQuery.toLowerCase());
+                return groupMatch && nameMatch;
+            })
+            .map(student => ({
+                ...student,
+                displayPoints: calculatePeriodPoints(student, currentPeriod)
+            }))
+            .sort((a, b) => b.displayPoints - a.displayPoints);
+
+        console.log('✅ Отфильтровано студентов:', filtered.length);
+
+        container.innerHTML = '';
+
+        if (filtered.length === 0) {
+            container.innerHTML = '<div style="text-align: center; padding: 20px; color: #ccc;">Студенты не найдены</div>';
+            return;
+        }
+
+        // Находим максимальное количество баллов для масштабирования
+        const maxPoints = Math.max(...filtered.map(s => s.displayPoints), 100);
+        
+        filtered.forEach(student => {
+            const barContainer = document.createElement('div');
+            barContainer.className = 'bar-container';
+
+            const infoContainer = document.createElement('div');
+            infoContainer.className = 'student-info';
+            
+            const nameSpan = document.createElement('span');
+            nameSpan.className = 'student-name';
+            nameSpan.textContent = student.name ? student.name.toUpperCase() : 'НЕИЗВЕСТНЫЙ СТУДЕНТ';
+            
+            const pointsSpan = document.createElement('span');
+            pointsSpan.className = 'student-points';
+            pointsSpan.textContent = `${student.displayPoints || 0} БАЛЛОВ`;
+            
+            infoContainer.appendChild(nameSpan);
+            infoContainer.appendChild(pointsSpan);
+            
+            const barWrapper = document.createElement('div');
+            barWrapper.className = 'bar-wrapper';
+            
+            const bar = document.createElement('div');
+            bar.className = 'bar';
+            // Масштабируем ширину относительно максимального количества баллов
+            const width = Math.min(((student.displayPoints || 0) / maxPoints) * 100, 100);
+            bar.style.width = `${width}%`;
+            
+            const emojiSpan = document.createElement('span');
+            emojiSpan.className = 'emoji';
+            emojiSpan.textContent = getEmoji(student.displayPoints || 0);
+            
+            barWrapper.appendChild(bar);
+            barWrapper.appendChild(emojiSpan);
+            
+            barContainer.appendChild(infoContainer);
+            barContainer.appendChild(barWrapper);
+            
+            container.appendChild(barContainer);
+        });
+    }
+
+    // ========== ФУНКЦИИ ПРЕПОДАВАТЕЛЕЙ ==========
+
+    function checkPassword() {
+        console.log('🔐 Проверка пароля...');
+        const password = document.getElementById('teacherPassword').value;
+        
+        if (password === TEACHER_PASSWORD) {
+            document.getElementById('loginSection').style.display = 'none';
+            document.getElementById('teacherPanel').style.display = 'block';
+            console.log('✅ Пароль верен');
+            loadTeachersForPanel();
+        } else {
+            alert('❌ Неверный пароль');
+        }
+    }
+
+    function loadTeachersForPanel() {
+        console.log('🔄 Загрузка преподавателей для панели...');
+        const teachers = [...new Set(studentsData.map(s => s.teacher).filter(t => t))];
+        const teacherSelect = document.getElementById('teacherSelect');
+        teacherSelect.innerHTML = '<option value="">-- Выберите преподавателя --</option>';
+        
+        teachers.forEach(teacher => {
+            const option = document.createElement('option');
+            option.value = teacher;
+            option.textContent = teacher;
+            teacherSelect.appendChild(option);
+        });
+    }
+
+    function loadGroups() {
+        const teacher = document.getElementById('teacherSelect').value;
+        const groupSelect = document.getElementById('groupSelect');
+        
+        if (!teacher) {
+            groupSelect.innerHTML = '<option value="">-- Сначала выберите преподавателя --</option>';
+            groupSelect.disabled = true;
+            return;
+        }
+        
+        // Загружаем группы на основе выбранного преподавателя
+        const groups = [...new Set(studentsData
+            .filter(student => student.teacher === teacher)
+            .map(student => student.group)
+            .filter(g => g))];
+        
+        groupSelect.innerHTML = '<option value="">-- Выберите группу --</option>';
+        
+        groups.forEach(group => {
             const option = document.createElement('option');
             option.value = group;
             option.textContent = group;
-            groupFilter.appendChild(option);
-        }
-    });
-}
+            groupSelect.appendChild(option);
+        });
+        groupSelect.disabled = false;
+    }
 
-function calculatePeriodPoints(student, period) {
-    if (period === 'all') {
-        return student.total;
-    }
-    
-    if (!student.dates || Object.keys(student.dates).length === 0) {
-        return 0;
-    }
-    
-    const now = new Date();
-    let startDate;
-    
-    switch(period) {
-        case 'day':
-            startDate = new Date(now);
-            startDate.setDate(now.getDate() - 1);
-            break;
-        case 'week':
-            startDate = new Date(now);
-            startDate.setDate(now.getDate() - 7);
-            break;
-        case 'month':
-            startDate = new Date(now);
-            startDate.setMonth(now.getMonth() - 1);
-            break;
-        default:
-            return student.total;
-    }
-    
-    // Суммируем баллы за выбранный период
-    let periodPoints = 0;
-    
-    for (const [dateString, points] of Object.entries(student.dates)) {
-        const pointsDate = parseDateString(dateString);
-        if (pointsDate && pointsDate >= startDate && pointsDate <= now) {
-            periodPoints += points;
+    // Загрузка журнала группы
+    async function loadGroupJournal() {
+        const teacher = document.getElementById('teacherSelect').value;
+        const group = document.getElementById('groupSelect').value;
+        const date = document.getElementById('dateSelect').value;
+        
+        if (!teacher || !group || !date) {
+            document.getElementById('journalTable').style.display = 'none';
+            return;
         }
-    }
-    
-    return periodPoints;
-}
-
-// Вспомогательная функция для парсинга даты из формата "DD.MM.YYYY"
-function parseDateString(dateString) {
-    if (!dateString) return null;
-    
-    try {
-        const parts = dateString.split('.');
-        if (parts.length === 3) {
-            const day = parseInt(parts[0], 10);
-            const month = parseInt(parts[1], 10) - 1; // Месяцы от 0 до 11
-            const year = parseInt(parts[2], 10);
+        
+        try {
+            showMessage('🔄 Загрузка данных группы...', 'info');
             
-            const date = new Date(year, month, day);
-            // Проверяем, что дата валидна
-            if (!isNaN(date.getTime()) && 
-                date.getDate() === day && 
-                date.getMonth() === month && 
-                date.getFullYear() === year) {
-                return date;
+            // Показываем таблицу
+            document.getElementById('currentGroupName').textContent = group;
+            document.getElementById('journalTable').style.display = 'block';
+            
+            // Получаем студентов группы
+            const groupStudents = studentsData.filter(student => 
+                student.teacher === teacher && student.group === group
+            );
+            
+            // Загружаем баллы для каждого студента
+            await loadStudentsPoints(groupStudents, date);
+            
+            showMessage('✅ Данные загружены', 'success');
+            
+        } catch (error) {
+            console.error('Ошибка загрузки журнала:', error);
+            showMessage('❌ Ошибка загрузки данных', 'error');
+        }
+    }
+
+    // Загрузка баллов для студентов группы
+    async function loadStudentsPoints(students, date) {
+        const tableBody = document.getElementById('journalTableBody');
+        tableBody.innerHTML = '';
+        
+        for (const student of students) {
+            try {
+                // Загружаем текущие баллы через API
+                const url = `${API_URL}?action=getCurrentPoints&studentId=${student.id}&date=${encodeURIComponent(date)}`;
+                const response = await fetch(url);
+                const result = await response.json();
+                
+                const currentPoints = result.success ? result.currentPoints : 0;
+                
+                // Создаем строку таблицы
+                const row = document.createElement('tr');
+                
+                // Столбец с именем
+                const nameCell = document.createElement('td');
+                nameCell.textContent = student.name;
+                nameCell.style.padding = '10px 12px';
+                
+                // Столбец с текущими баллами
+                const currentCell = document.createElement('td');
+                currentCell.innerHTML = `<div class="current-points">${currentPoints}</div>`;
+                currentCell.style.textAlign = 'center';
+                currentCell.style.padding = '10px 12px';
+                
+                // Столбец для ввода новых баллов
+                const inputCell = document.createElement('td');
+                inputCell.style.textAlign = 'center';
+                inputCell.style.padding = '10px 12px';
+                const input = document.createElement('input');
+                input.type = 'number';
+                input.className = 'points-input';
+                input.min = '0';
+                input.max = '100';
+                input.value = currentPoints;
+                input.dataset.studentId = student.id;
+                input.dataset.studentName = student.name;
+                inputCell.appendChild(input);
+                
+                row.appendChild(nameCell);
+                row.appendChild(currentCell);
+                row.appendChild(inputCell);
+                
+                tableBody.appendChild(row);
+                
+            } catch (error) {
+                console.error(`Ошибка загрузки баллов для ${student.name}:`, error);
             }
         }
-    } catch (error) {
-        console.warn('Ошибка парсинга даты:', dateString, error);
-    }
-    
-    return null;
-}
-
-function displayStudents() {
-    const container = document.getElementById('students');
-    
-    console.log('🔄 Отображение студентов. Период:', currentPeriod);
-    
-    const filtered = studentsData
-        .filter(student => {
-            const groupMatch = currentGroup === 'all' || student.group === currentGroup;
-            const nameMatch = student.name && student.name.toLowerCase().includes(searchQuery.toLowerCase());
-            return groupMatch && nameMatch;
-        })
-        .map(student => ({
-            ...student,
-            displayPoints: calculatePeriodPoints(student, currentPeriod)
-        }))
-        .sort((a, b) => b.displayPoints - a.displayPoints);
-
-    console.log('✅ Отфильтровано студентов:', filtered.length);
-
-    container.innerHTML = '';
-
-    if (filtered.length === 0) {
-        container.innerHTML = '<div style="text-align: center; padding: 20px; color: #ccc;">Студенты не найдены</div>';
-        return;
     }
 
-    // Находим максимальное количество баллов для масштабирования
-    const maxPoints = Math.max(...filtered.map(s => s.displayPoints), 100);
-    
-    filtered.forEach(student => {
-        const barContainer = document.createElement('div');
-        barContainer.className = 'bar-container';
-
-        const infoContainer = document.createElement('div');
-        infoContainer.className = 'student-info';
+    // Сохранение всех баллов группы
+    async function updateGroupPoints() {
+        const teacher = document.getElementById('teacherSelect').value;
+        const group = document.getElementById('groupSelect').value;
+        const date = document.getElementById('dateSelect').value;
         
-        const nameSpan = document.createElement('span');
-        nameSpan.className = 'student-name';
-        nameSpan.textContent = student.name ? student.name.toUpperCase() : 'НЕИЗВЕСТНЫЙ СТУДЕНТ';
-        
-        const pointsSpan = document.createElement('span');
-        pointsSpan.className = 'student-points';
-        pointsSpan.textContent = `${student.displayPoints || 0} БАЛЛОВ`;
-        
-        infoContainer.appendChild(nameSpan);
-        infoContainer.appendChild(pointsSpan);
-        
-        const barWrapper = document.createElement('div');
-        barWrapper.className = 'bar-wrapper';
-        
-        const bar = document.createElement('div');
-        bar.className = 'bar';
-        // Масштабируем ширину относительно максимального количества баллов
-        const width = Math.min(((student.displayPoints || 0) / maxPoints) * 100, 100);
-        bar.style.width = `${width}%`;
-        
-        const emojiSpan = document.createElement('span');
-        emojiSpan.className = 'emoji';
-        emojiSpan.textContent = getEmoji(student.displayPoints || 0);
-        
-        barWrapper.appendChild(bar);
-        barWrapper.appendChild(emojiSpan);
-        
-        barContainer.appendChild(infoContainer);
-        barContainer.appendChild(barWrapper);
-        
-        container.appendChild(barContainer);
-    });
-}
-// ========== ФУНКЦИИ ПРЕПОДАВАТЕЛЕЙ ==========
-
-function checkPassword() {
-    console.log('🔐 Проверка пароля...');
-    const password = document.getElementById('teacherPassword').value;
-    
-    if (password === TEACHER_PASSWORD) {
-        document.getElementById('loginSection').style.display = 'none';
-        document.getElementById('teacherPanel').style.display = 'block';
-        console.log('✅ Пароль верен');
-        loadTeachersForPanel();
-    } else {
-        alert('❌ Неверный пароль');
-    }
-}
-
-function loadTeachersForPanel() {
-    console.log('🔄 Загрузка преподавателей для панели...');
-    const teachers = [...new Set(studentsData.map(s => s.teacher).filter(t => t))];
-    const teacherSelect = document.getElementById('teacherSelect');
-    teacherSelect.innerHTML = '<option value="">-- Выберите преподавателя --</option>';
-    
-    teachers.forEach(teacher => {
-        const option = document.createElement('option');
-        option.value = teacher;
-        option.textContent = teacher;
-        teacherSelect.appendChild(option);
-    });
-}
-
-function loadGroups() {
-    const teacher = document.getElementById('teacherSelect').value;
-    const groupSelect = document.getElementById('groupSelect');
-    
-    if (!teacher) {
-        groupSelect.innerHTML = '<option value="">-- Сначала выберите преподавателя --</option>';
-        groupSelect.disabled = true;
-        return;
-    }
-    
-    // Загружаем группы на основе выбранного преподавателя
-    const groups = [...new Set(studentsData
-        .filter(student => student.teacher === teacher)
-        .map(student => student.group)
-        .filter(g => g))];
-    
-    groupSelect.innerHTML = '<option value="">-- Выберите группу --</option>';
-    
-    groups.forEach(group => {
-        const option = document.createElement('option');
-        option.value = group;
-        option.textContent = group;
-        groupSelect.appendChild(option);
-    });
-    groupSelect.disabled = false;
-}
-
-function loadStudentsForPanel() {
-    const teacher = document.getElementById('teacherSelect').value;
-    const group = document.getElementById('groupSelect').value;
-    const studentSelect = document.getElementById('studentSelect');
-    
-    if (!teacher || !group) {
-        studentSelect.innerHTML = '<option value="">-- Сначала выберите группу --</option>';
-        studentSelect.disabled = true;
-        return;
-    }
-    
-    // Загружаем студентов на основе группы
-    const groupStudents = studentsData.filter(student => 
-        student.teacher === teacher && student.group === group
-    );
-    
-    studentSelect.innerHTML = '<option value="">-- Выберите ученика --</option>';
-    
-    groupStudents.forEach(student => {
-        const option = document.createElement('option');
-        option.value = student.id; // Важно: используем числовой ID, а не имя
-        option.textContent = student.name;
-        studentSelect.appendChild(option);
-    });
-    studentSelect.disabled = false;
-}
-
-async function loadCurrentPoints() {
-    const studentId = document.getElementById('studentSelect').value;
-    const date = document.getElementById('dateSelect').value;
-    
-    if (!studentId || !date) {
-        document.getElementById('currentPointsDisplay').textContent = '0';
-        document.getElementById('pointsInput').value = '0';
-        return;
-    }
-    
-    try {
-        // Используем GET вместо POST
-        const url = `${API_URL}?action=getCurrentPoints&studentId=${studentId}&date=${encodeURIComponent(date)}`;
-        const response = await fetch(url);
-        
-        const result = await response.json();
-        
-        if (result.success) {
-            document.getElementById('currentPointsDisplay').textContent = result.currentPoints;
-            document.getElementById('pointsInput').value = result.currentPoints;
-        } else {
-            document.getElementById('currentPointsDisplay').textContent = '0';
-            document.getElementById('pointsInput').value = '0';
+        if (!teacher || !group || !date) {
+            showMessage('Заполните все поля: преподаватель, группа и дата', 'error');
+            return;
         }
         
-    } catch (error) {
-        console.error('Ошибка загрузки текущих баллов:', error);
-        document.getElementById('currentPointsDisplay').textContent = '0';
-        document.getElementById('pointsInput').value = '0';
-    }
-}
-
-async function updatePoints() {
-    const teacher = document.getElementById('teacherSelect').value;
-    const group = document.getElementById('groupSelect').value;
-    const studentId = document.getElementById('studentSelect').value;
-    const date = document.getElementById('dateSelect').value;
-    const points = document.getElementById('pointsInput').value;
-    
-    if (!teacher || !group || !studentId || !date || points === '') {
-        showMessage('Заполните все поля: преподаватель, группа, дата, ученик и баллы', 'error');
-        return;
-    }
-    
-    if (points < 0 || points > 100) {
-        showMessage('Баллы должны быть от 0 до 100', 'error');
-        return;
-    }
-    
-    showMessage('🔄 Сохранение баллов...', 'info');
-    
-    try {
-        // Используем GET вместо POST
-        const url = `${API_URL}?action=updatePoints&studentId=${studentId}&date=${encodeURIComponent(date)}&points=${points}&teacher=${encodeURIComponent(teacher)}&group=${encodeURIComponent(group)}`;
-        const response = await fetch(url);
+        const inputs = document.querySelectorAll('.points-input');
+        const updates = [];
         
-        const result = await response.json();
+        // Собираем все изменения
+        inputs.forEach(input => {
+            const studentId = input.dataset.studentId;
+            const studentName = input.dataset.studentName;
+            const points = input.value;
+            
+            if (points !== '' && points >= 0 && points <= 100) {
+                updates.push({
+                    studentId: studentId,
+                    studentName: studentName,
+                    points: points
+                });
+            }
+        });
         
-        if (result.success) {
-            showMessage('✅ Баллы успешно сохранены!', 'success');
-            loadCurrentPoints();
-            loadStudents();
-        } else {
-            showMessage('❌ Ошибка сохранения: ' + (result.error || 'Неизвестная ошибка'), 'error');
+        if (updates.length === 0) {
+            showMessage('Нет данных для сохранения', 'error');
+            return;
         }
         
-    } catch (error) {
-        console.error('Ошибка при сохранении баллов:', error);
-        showMessage('❌ Ошибка соединения с сервером', 'error');
-    }
-}
-
-function formatDateForInput(dateString) {
-    // Конвертируем из YYYY-MM-DD в DD.MM.YYYY
-    const parts = dateString.split('-');
-    if (parts.length === 3) {
-        return `${parts[2]}.${parts[1]}.${parts[0]}`;
-    }
-    return dateString;
-}
-
-
-
-function showMessage(text, type) {
-    const messageDiv = document.getElementById('message');
-    if (!messageDiv) return;
-    
-    messageDiv.textContent = text;
-    const colors = {
-        success: '#2a5a2a',
-        error: '#5a2a2a', 
-        info: '#2a2a5a'
-    };
-    messageDiv.style.backgroundColor = colors[type] || '#2a2a2a';
-    messageDiv.style.color = type === 'success' ? '#90ee90' : 
-                           type === 'error' ? '#ff6b6b' : '#6b6bff';
-    messageDiv.style.padding = '10px';
-    messageDiv.style.borderRadius = '5px';
-    messageDiv.style.marginTop = '15px';
-    
-    setTimeout(() => {
-        messageDiv.textContent = '';
-        messageDiv.style.backgroundColor = '';
-    }, 5000);
-}
-
-// ========== ОБРАБОТЧИКИ СОБЫТИЙ ==========
-
-function initEventListeners() {
-    // Кнопка прокрутки
-    document.getElementById('scrollButton').addEventListener('click', () => {
-        document.querySelector('.content').scrollIntoView({ behavior: 'smooth' });
-    });
-    
-    // Кнопка для преподавателей
-    document.getElementById('teacherButton').addEventListener('click', () => {
-        const loginSection = document.getElementById('loginSection');
-        if (loginSection) {
-            loginSection.style.display = 'block';
-            loginSection.scrollIntoView({ behavior: 'smooth' });
+        showMessage(`🔄 Сохранение ${updates.length} записей...`, 'info');
+        
+        try {
+            let successCount = 0;
+            let errorCount = 0;
+            
+            // Сохраняем каждую запись
+            for (const update of updates) {
+                try {
+                    const url = `${API_URL}?action=updatePoints&studentId=${update.studentId}&date=${encodeURIComponent(date)}&points=${update.points}&teacher=${encodeURIComponent(teacher)}&group=${encodeURIComponent(group)}`;
+                    const response = await fetch(url);
+                    const result = await response.json();
+                    
+                    if (result.success) {
+                        successCount++;
+                    } else {
+                        errorCount++;
+                        console.error(`Ошибка сохранения для ${update.studentName}:`, result.error);
+                    }
+                } catch (error) {
+                    errorCount++;
+                    console.error(`Ошибка сохранения для ${update.studentName}:`, error);
+                }
+            }
+            
+            if (errorCount === 0) {
+                showMessage(`✅ Успешно сохранено ${successCount} записей`, 'success');
+                // Обновляем общий список студентов
+                loadStudents();
+                // Перезагружаем журнал чтобы показать обновленные текущие баллы
+                setTimeout(() => loadGroupJournal(), 1000);
+            } else {
+                showMessage(`✅ Сохранено ${successCount} записей, ❌ ошибок: ${errorCount}`, 'warning');
+            }
+            
+        } catch (error) {
+            console.error('Ошибка при сохранении группы:', error);
+            showMessage('❌ Ошибка сохранения данных', 'error');
         }
-    });
-    
-    // Фильтр групп
-    document.getElementById('groupFilter').addEventListener('change', (e) => {
-        currentGroup = e.target.value;
-        displayStudents();
-    });
-    
-    // Поиск
-    document.getElementById('searchInput').addEventListener('input', (e) => {
-        searchQuery = e.target.value.trim();
-        displayStudents();
-    });
-    
-    // Фильтры по времени
-    document.querySelectorAll('.time-filters button').forEach(button => {
-        button.addEventListener('click', (e) => {
-            currentPeriod = e.target.dataset.period;
-            document.querySelectorAll('.time-filters button').forEach(btn => 
-                btn.classList.remove('active'));
-            e.target.classList.add('active');
+    }
+
+    function showMessage(text, type) {
+        const messageDiv = document.getElementById('message');
+        if (!messageDiv) return;
+        
+        messageDiv.textContent = text;
+        const colors = {
+            success: '#2a5a2a',
+            error: '#5a2a2a', 
+            info: '#2a2a5a',
+            warning: '#5a5a2a'
+        };
+        messageDiv.style.backgroundColor = colors[type] || '#2a2a2a';
+        messageDiv.style.color = type === 'success' ? '#90ee90' : 
+                               type === 'error' ? '#ff6b6b' : 
+                               type === 'warning' ? '#ffff90' : '#6b6bff';
+        messageDiv.style.padding = '10px';
+        messageDiv.style.borderRadius = '5px';
+        messageDiv.style.marginTop = '15px';
+        
+        setTimeout(() => {
+            messageDiv.textContent = '';
+            messageDiv.style.backgroundColor = '';
+        }, 5000);
+    }
+
+    // ========== ОБРАБОТЧИКИ СОБЫТИЙ ==========
+
+    function initEventListeners() {
+        // Кнопка прокрутки
+        document.getElementById('scrollButton').addEventListener('click', () => {
+            document.querySelector('.content').scrollIntoView({ behavior: 'smooth' });
+        });
+        
+        // Кнопка для преподавателей
+        document.getElementById('teacherButton').addEventListener('click', () => {
+            const loginSection = document.getElementById('loginSection');
+            if (loginSection) {
+                loginSection.style.display = 'block';
+                loginSection.scrollIntoView({ behavior: 'smooth' });
+            }
+        });
+        
+        // Фильтр групп
+        document.getElementById('groupFilter').addEventListener('change', (e) => {
+            currentGroup = e.target.value;
             displayStudents();
         });
-    });
-    
-    // Обработчики для панели преподавателя
-    document.getElementById('teacherSelect').addEventListener('change', loadGroups);
-    document.getElementById('groupSelect').addEventListener('change', loadStudentsForPanel);
-    document.getElementById('studentSelect').addEventListener('change', loadCurrentPoints);
-    document.getElementById('dateSelect').addEventListener('change', loadCurrentPoints);
-}
-
-// ========== ИНИЦИАЛИЗАЦИЯ ==========
-
-document.addEventListener('DOMContentLoaded', function() {
-    console.log('🚀 Страница загружена, инициализация...');
-    
-    initEventListeners();
-    
-    // Устанавливаем сегодняшнюю дату по умолчанию
-    const dateSelect = document.getElementById('dateSelect');
-    if (dateSelect) {
-        const today = new Date().toISOString().split('T')[0];
-        dateSelect.value = today;
+        
+        // Поиск
+        document.getElementById('searchInput').addEventListener('input', (e) => {
+            searchQuery = e.target.value.trim();
+            displayStudents();
+        });
+        
+        // Фильтры по времени
+        document.querySelectorAll('.time-filters button').forEach(button => {
+            button.addEventListener('click', (e) => {
+                currentPeriod = e.target.dataset.period;
+                document.querySelectorAll('.time-filters button').forEach(btn => 
+                    btn.classList.remove('active'));
+                e.target.classList.add('active');
+                displayStudents();
+            });
+        });
     }
-    
-    // ЗАГРУЗКА ДАННЫХ ПРИ СТАРТЕ - ЭТО ОЧЕНЬ ВАЖНО!
-    loadStudents();
-});
-    
+
+    // ========== ИНИЦИАЛИЗАЦИЯ ==========
+
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('🚀 Страница загружена, инициализация...');
+        
+        initEventListeners();
+        
+        // Устанавливаем сегодняшнюю дату по умолчанию
+        const dateSelect = document.getElementById('dateSelect');
+        if (dateSelect) {
+            const today = new Date().toISOString().split('T')[0];
+            dateSelect.value = today;
+        }
+        
+        // ЗАГРУЗКА ДАННЫХ ПРИ СТАРТЕ - ЭТО ОЧЕНЬ ВАЖНО!
+        loadStudents();
+    });
 </script>
 </body>
 </html>
