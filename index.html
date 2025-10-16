@@ -442,7 +442,7 @@
 
 <script>
     const BACKGROUND_IMAGE = 'https://img3.akspic.ru/crops/5/4/7/2/5/152745/152745-dizajn-graficeskij_dizajn-sinij-krasochnost-purpur-3840x2160.jpg';
-    const API_URL = 'https://script.google.com/macros/s/AKfycbxxeMafXgGm6XCFmksfqBSGJU00_2pik2pm16ksNzeuXmcoJr_rJuNopUxDi8PCCLIz/exec';
+    const API_URL = 'https://script.google.com/macros/s/AKfycbxtG5cbwUmrCgYnuY1Zv8iOQKrXP3JCbzN7IcHd3bKMz7EvtfqQjP4P33XwyTk-RDzc/exec';
 const TEACHER_PASSWORD = 'teacher123';
 document.querySelector('.cover').style.backgroundImage = `url(${BACKGROUND_IMAGE})`;
 let studentsData = [];
@@ -679,17 +679,9 @@ async function loadCurrentPoints() {
     }
     
     try {
-        const response = await fetch(API_URL, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                action: 'getCurrentPoints',
-                studentId: studentId,
-                date: date
-            })
-        });
+        // Используем GET вместо POST
+        const url = `${API_URL}?action=getCurrentPoints&studentId=${studentId}&date=${encodeURIComponent(date)}`;
+        const response = await fetch(url);
         
         const result = await response.json();
         
@@ -706,15 +698,6 @@ async function loadCurrentPoints() {
         document.getElementById('currentPointsDisplay').textContent = '0';
         document.getElementById('pointsInput').value = '0';
     }
-}
-
-function formatDateForInput(dateString) {
-    // Конвертируем из YYYY-MM-DD в DD.MM.YYYY
-    const parts = dateString.split('-');
-    if (parts.length === 3) {
-        return `${parts[2]}.${parts[1]}.${parts[0]}`;
-    }
-    return dateString;
 }
 
 async function updatePoints() {
@@ -737,28 +720,15 @@ async function updatePoints() {
     showMessage('🔄 Сохранение баллов...', 'info');
     
     try {
-        const response = await fetch(API_URL, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                action: 'updatePoints',
-                studentId: studentId,
-                date: date,
-                points: points,
-                teacher: teacher,
-                group: group
-            })
-        });
+        // Используем GET вместо POST
+        const url = `${API_URL}?action=updatePoints&studentId=${studentId}&date=${encodeURIComponent(date)}&points=${points}&teacher=${encodeURIComponent(teacher)}&group=${encodeURIComponent(group)}`;
+        const response = await fetch(url);
         
         const result = await response.json();
         
         if (result.success) {
             showMessage('✅ Баллы успешно сохранены!', 'success');
-            // Обновляем текущие баллы после сохранения
             loadCurrentPoints();
-            // Перезагружаем общий список студентов чтобы обновить totals
             loadStudents();
         } else {
             showMessage('❌ Ошибка сохранения: ' + (result.error || 'Неизвестная ошибка'), 'error');
@@ -769,6 +739,17 @@ async function updatePoints() {
         showMessage('❌ Ошибка соединения с сервером', 'error');
     }
 }
+
+function formatDateForInput(dateString) {
+    // Конвертируем из YYYY-MM-DD в DD.MM.YYYY
+    const parts = dateString.split('-');
+    if (parts.length === 3) {
+        return `${parts[2]}.${parts[1]}.${parts[0]}`;
+    }
+    return dateString;
+}
+
+
 
 function showMessage(text, type) {
     const messageDiv = document.getElementById('message');
