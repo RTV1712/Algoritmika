@@ -512,16 +512,78 @@ function updateFilters() {
 }
 
 function calculatePeriodPoints(student, period) {
-    if (period === 'all') return student.total;
-    return student.total; // Упрощенная версия без фильтрации по датам
+    if (period === 'all') {
+        return student.total;
+    }
+    
+    if (!student.dates || Object.keys(student.dates).length === 0) {
+        return 0;
+    }
+    
+    const now = new Date();
+    let startDate;
+    
+    switch(period) {
+        case 'day':
+            startDate = new Date(now);
+            startDate.setDate(now.getDate() - 1);
+            break;
+        case 'week':
+            startDate = new Date(now);
+            startDate.setDate(now.getDate() - 7);
+            break;
+        case 'month':
+            startDate = new Date(now);
+            startDate.setMonth(now.getMonth() - 1);
+            break;
+        default:
+            return student.total;
+    }
+    
+    // Суммируем баллы за выбранный период
+    let periodPoints = 0;
+    
+    for (const [dateString, points] of Object.entries(student.dates)) {
+        const pointsDate = parseDateString(dateString);
+        if (pointsDate && pointsDate >= startDate && pointsDate <= now) {
+            periodPoints += points;
+        }
+    }
+    
+    return periodPoints;
+}
+
+// Вспомогательная функция для парсинга даты из формата "DD.MM.YYYY"
+function parseDateString(dateString) {
+    if (!dateString) return null;
+    
+    try {
+        const parts = dateString.split('.');
+        if (parts.length === 3) {
+            const day = parseInt(parts[0], 10);
+            const month = parseInt(parts[1], 10) - 1; // Месяцы от 0 до 11
+            const year = parseInt(parts[2], 10);
+            
+            const date = new Date(year, month, day);
+            // Проверяем, что дата валидна
+            if (!isNaN(date.getTime()) && 
+                date.getDate() === day && 
+                date.getMonth() === month && 
+                date.getFullYear() === year) {
+                return date;
+            }
+        }
+    } catch (error) {
+        console.warn('Ошибка парсинга даты:', dateString, error);
+    }
+    
+    return null;
 }
 
 function displayStudents() {
     const container = document.getElementById('students');
     
-    // Отладочная информация
-    console.log('🔄 Отображение студентов. Всего:', studentsData.length);
-    console.log('🔍 Фильтры - группа:', currentGroup, 'поиск:', searchQuery);
+    console.log('🔄 Отображение студентов. Период:', currentPeriod);
     
     const filtered = studentsData
         .filter(student => {
@@ -544,6 +606,9 @@ function displayStudents() {
         return;
     }
 
+    // Находим максимальное количество баллов для масштабирования
+    const maxPoints = Math.max(...filtered.map(s => s.displayPoints), 100);
+    
     filtered.forEach(student => {
         const barContainer = document.createElement('div');
         barContainer.className = 'bar-container';
@@ -567,7 +632,8 @@ function displayStudents() {
         
         const bar = document.createElement('div');
         bar.className = 'bar';
-        const width = Math.min(((student.displayPoints || 0) / 100) * 100, 100);
+        // Масштабируем ширину относительно максимального количества баллов
+        const width = Math.min(((student.displayPoints || 0) / maxPoints) * 100, 100);
         bar.style.width = `${width}%`;
         
         const emojiSpan = document.createElement('span');
@@ -583,7 +649,6 @@ function displayStudents() {
         container.appendChild(barContainer);
     });
 }
-
 // ========== ФУНКЦИИ ПРЕПОДАВАТЕЛЕЙ ==========
 
 function checkPassword() {
