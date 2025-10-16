@@ -677,18 +677,18 @@
     // ========== ФУНКЦИИ ПРЕПОДАВАТЕЛЕЙ ==========
 
     function checkPassword() {
-        console.log('🔐 Проверка пароля...');
-        const password = document.getElementById('teacherPassword').value;
-        
-        if (password === TEACHER_PASSWORD) {
-            document.getElementById('loginSection').style.display = 'none';
-            document.getElementById('teacherPanel').style.display = 'block';
-            console.log('✅ Пароль верен');
-            loadTeachersForPanel();
-        } else {
-            alert('❌ Неверный пароль');
-        }
+    console.log('🔐 Проверка пароля...');
+    const password = document.getElementById('teacherPassword').value;
+    
+    if (password === TEACHER_PASSWORD) {
+        document.getElementById('loginSection').style.display = 'none';
+        document.getElementById('teacherPanel').style.display = 'block';
+        console.log('✅ Пароль верен');
+        loadTeachersForPanel();
+    } else {
+        alert('❌ Неверный пароль');
     }
+}
 
     function loadTeachersForPanel() {
         console.log('🔄 Загрузка преподавателей для панели...');
@@ -978,9 +978,10 @@
 document.getElementById('teacherButton').addEventListener('click', () => {
     const loginSection = document.getElementById('loginSection');
     const teacherPanel = document.getElementById('teacherPanel');
+    const teacherButton = document.getElementById('teacherButton');
     
-    // Если панель преподавателя уже открыта - закрываем её
-    if (teacherPanel.style.display === 'block') {
+    // Если форма входа ИЛИ панель преподавателя открыты - закрываем всё
+    if (loginSection.style.display === 'block' || teacherPanel.style.display === 'block') {
         teacherPanel.style.display = 'none';
         loginSection.style.display = 'none';
     } else {
