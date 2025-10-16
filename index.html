@@ -333,6 +333,54 @@
                 width: 200px;
             }
         }
+        .journal-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #2a2a2a;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.journal-table th {
+    background: #9400d3;
+    padding: 12px;
+    text-align: left;
+    color: white;
+    border-bottom: 2px solid #7a00b3;
+}
+
+.journal-table td {
+    padding: 10px 12px;
+    border-bottom: 1px solid #3a3a3a;
+    vertical-align: middle;
+}
+
+.journal-table tr:hover {
+    background: #3a3a3a;
+}
+
+.points-input {
+    width: 80px;
+    padding: 8px;
+    text-align: center;
+    background: #1a1a1a;
+    border: 1px solid #9400d3;
+    border-radius: 4px;
+    color: white;
+    font-size: 14px;
+}
+
+.points-input:focus {
+    outline: none;
+    border-color: #00ff00;
+    box-shadow: 0 0 5px rgba(0, 255, 0, 0.3);
+}
+
+.current-points {
+    text-align: center;
+    font-weight: bold;
+    color: #00ff00;
+}
     </style>
 </head>
 <body>
@@ -354,56 +402,56 @@
             <button onclick="checkPassword()" class="cover-button" style="margin: 10px;">Войти</button>
         </div>
 
-        <!-- Панель преподавателя -->
-        <div id="teacherPanel" class="teacher-panel" style="display: none;">
-            <h3>📝 Добавление/изменение баллов</h3>
-            
-            <div class="teacher-form">
-                <div class="form-group">
-                    <label for="teacherSelect">👨‍🏫 Преподаватель:</label>
-                    <select id="teacherSelect" onchange="loadGroups()">
-                        <option value="">-- Выберите преподавателя --</option>
-                    </select>
-                </div>
-                
-                <div class="form-group">
-                    <label for="groupSelect">👥 Группа:</label>
-                    <select id="groupSelect" onchange="loadStudents()" disabled>
-                        <option value="">-- Сначала выберите преподавателя --</option>
-                    </select>
-                </div>
-                
-                <div class="form-group">
-                    <label for="dateSelect">📅 Дата занятия:</label>
-                    <input type="date" id="dateSelect" onchange="loadCurrentPoints()">
-                </div>
-                
-                <div class="form-group">
-                    <label for="studentSelect">🎓 Ученик:</label>
-                    <select id="studentSelect" onchange="loadCurrentPoints()" disabled>
-                        <option value="">-- Сначала выберите группу --</option>
-                    </select>
-                </div>
-                
-                <div class="points-display">
-                    <div class="current-points">
-                        <label>Текущие баллы за это занятие:</label>
-                        <div id="currentPointsDisplay" class="points-value">0</div>
-                    </div>
-                    
-                    <div class="new-points">
-                        <label for="pointsInput">Новые баллы:</label>
-                        <input type="number" id="pointsInput" min="0" max="100" value="0" 
-                               style="font-size: 18px; font-weight: bold; text-align: center; padding: 10px;">
-                    </div>
-                </div>
-                
-                <button class="submit-btn" onclick="updatePoints()">
-                    💾 Сохранить баллы
-                </button>
-            </div>
-            <div id="message" style="margin-top: 15px; padding: 10px; border-radius: 5px;"></div>
+       <!-- Панель преподавателя -->
+<div id="teacherPanel" class="teacher-panel" style="display: none;">
+    <h3>📝 Журнал баллов - Групповое редактирование</h3>
+    
+    <div class="teacher-form">
+        <div class="form-group">
+            <label for="teacherSelect">👨‍🏫 Преподаватель:</label>
+            <select id="teacherSelect" onchange="loadGroups()">
+                <option value="">-- Выберите преподавателя --</option>
+            </select>
         </div>
+        
+        <div class="form-group">
+            <label for="groupSelect">👥 Группа:</label>
+            <select id="groupSelect" onchange="loadGroupJournal()" disabled>
+                <option value="">-- Сначала выберите преподавателя --</option>
+            </select>
+        </div>
+        
+        <div class="form-group">
+            <label for="dateSelect">📅 Дата занятия:</label>
+            <input type="date" id="dateSelect" onchange="loadGroupJournal()">
+        </div>
+    </div>
+
+    <!-- Таблица журнала -->
+    <div id="journalTable" style="display: none; margin-top: 20px;">
+        <h4>Журнал группы: <span id="currentGroupName"></span></h4>
+        <div style="overflow-x: auto;">
+            <table style="width: 100%; border-collapse: collapse; background: #2a2a2a; border-radius: 8px;">
+                <thead>
+                    <tr style="background: #9400d3;">
+                        <th style="padding: 12px; text-align: left; color: white; border-bottom: 2px solid #7a00b3;">Ученик</th>
+                        <th style="padding: 12px; text-align: center; color: white; border-bottom: 2px solid #7a00b3;">Текущие баллы</th>
+                        <th style="padding: 12px; text-align: center; color: white; border-bottom: 2px solid #7a00b3;">Новые баллы</th>
+                    </tr>
+                </thead>
+                <tbody id="journalTableBody">
+                    <!-- Строки будут добавляться через JavaScript -->
+                </tbody>
+            </table>
+        </div>
+        
+        <button class="submit-btn" onclick="updateGroupPoints()" style="margin-top: 20px;">
+            💾 Сохранить все изменения
+        </button>
+    </div>
+    
+    <div id="message" style="margin-top: 15px; padding: 10px; border-radius: 5px;"></div>
+</div>
 
         <!-- Фильтры времени -->
         <div class="time-filters">
@@ -458,7 +506,168 @@ function getEmoji(points) {
     if (points >= 80 && points <= 100) return '🔥';
     return '';
 }
+// Загрузка журнала группы
+async function loadGroupJournal() {
+    const teacher = document.getElementById('teacherSelect').value;
+    const group = document.getElementById('groupSelect').value;
+    const date = document.getElementById('dateSelect').value;
+    
+    if (!teacher || !group || !date) {
+        document.getElementById('journalTable').style.display = 'none';
+        return;
+    }
+    
+    try {
+        showMessage('🔄 Загрузка данных группы...', 'info');
+        
+        // Показываем таблицу
+        document.getElementById('currentGroupName').textContent = group;
+        document.getElementById('journalTable').style.display = 'block';
+        
+        // Получаем студентов группы
+        const groupStudents = studentsData.filter(student => 
+            student.teacher === teacher && student.group === group
+        );
+        
+        // Загружаем баллы для каждого студента
+        await loadStudentsPoints(groupStudents, date);
+        
+        showMessage('✅ Данные загружены', 'success');
+        
+    } catch (error) {
+        console.error('Ошибка загрузки журнала:', error);
+        showMessage('❌ Ошибка загрузки данных', 'error');
+    }
+}
 
+    // Загрузка баллов для студентов группы
+async function loadStudentsPoints(students, date) {
+    const tableBody = document.getElementById('journalTableBody');
+    tableBody.innerHTML = '';
+    
+    for (const student of students) {
+        try {
+            // Загружаем текущие баллы через API
+            const url = `${API_URL}?action=getCurrentPoints&studentId=${student.id}&date=${encodeURIComponent(date)}`;
+            const response = await fetch(url);
+            const result = await response.json();
+            
+            const currentPoints = result.success ? result.currentPoints : 0;
+            
+            // Создаем строку таблицы
+            const row = document.createElement('tr');
+            
+            // Столбец с именем
+            const nameCell = document.createElement('td');
+            nameCell.textContent = student.name;
+            nameCell.style.padding = '10px 12px';
+            
+            // Столбец с текущими баллами
+            const currentCell = document.createElement('td');
+            currentCell.innerHTML = `<div class="current-points">${currentPoints}</div>`;
+            currentCell.style.textAlign = 'center';
+            currentCell.style.padding = '10px 12px';
+            
+            // Столбец для ввода новых баллов
+            const inputCell = document.createElement('td');
+            inputCell.style.textAlign = 'center';
+            inputCell.style.padding = '10px 12px';
+            const input = document.createElement('input');
+            input.type = 'number';
+            input.className = 'points-input';
+            input.min = '0';
+            input.max = '100';
+            input.value = currentPoints;
+            input.dataset.studentId = student.id;
+            input.dataset.studentName = student.name;
+            inputCell.appendChild(input);
+            
+            row.appendChild(nameCell);
+            row.appendChild(currentCell);
+            row.appendChild(inputCell);
+            
+            tableBody.appendChild(row);
+            
+        } catch (error) {
+            console.error(`Ошибка загрузки баллов для ${student.name}:`, error);
+        }
+    }
+}
+
+// Сохранение всех баллов группы
+async function updateGroupPoints() {
+    const teacher = document.getElementById('teacherSelect').value;
+    const group = document.getElementById('groupSelect').value;
+    const date = document.getElementById('dateSelect').value;
+    
+    if (!teacher || !group || !date) {
+        showMessage('Заполните все поля: преподаватель, группа и дата', 'error');
+        return;
+    }
+    
+    const inputs = document.querySelectorAll('.points-input');
+    const updates = [];
+    
+    // Собираем все изменения
+    inputs.forEach(input => {
+        const studentId = input.dataset.studentId;
+        const studentName = input.dataset.studentName;
+        const points = input.value;
+        
+        if (points !== '' && points >= 0 && points <= 100) {
+            updates.push({
+                studentId: studentId,
+                studentName: studentName,
+                points: points
+            });
+        }
+    });
+    
+    if (updates.length === 0) {
+        showMessage('Нет данных для сохранения', 'error');
+        return;
+    }
+    
+    showMessage(`🔄 Сохранение ${updates.length} записей...`, 'info');
+    
+    try {
+        let successCount = 0;
+        let errorCount = 0;
+        
+        // Сохраняем каждую запись
+        for (const update of updates) {
+            try {
+                const url = `${API_URL}?action=updatePoints&studentId=${update.studentId}&date=${encodeURIComponent(date)}&points=${update.points}&teacher=${encodeURIComponent(teacher)}&group=${encodeURIComponent(group)}`;
+                const response = await fetch(url);
+                const result = await response.json();
+                
+                if (result.success) {
+                    successCount++;
+                } else {
+                    errorCount++;
+                    console.error(`Ошибка сохранения для ${update.studentName}:`, result.error);
+                }
+            } catch (error) {
+                errorCount++;
+                console.error(`Ошибка сохранения для ${update.studentName}:`, error);
+            }
+        }
+        
+        if (errorCount === 0) {
+            showMessage(`✅ Успешно сохранено ${successCount} записей`, 'success');
+            // Обновляем общий список студентов
+            loadStudents();
+            // Перезагружаем журнал чтобы показать обновленные текущие баллы
+            setTimeout(() => loadGroupJournal(), 1000);
+        } else {
+            showMessage(`✅ Сохранено ${successCount} записей, ❌ ошибок: ${errorCount}`, 'warning');
+        }
+        
+    } catch (error) {
+        console.error('Ошибка при сохранении группы:', error);
+        showMessage('❌ Ошибка сохранения данных', 'error');
+    }
+}
 // Исправленная функция загрузки данных
 async function loadStudents() {
     try {
