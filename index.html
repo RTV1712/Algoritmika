@@ -754,8 +754,8 @@
                 student.teacher === teacher && student.group === group
             );
             
-            // Загружаем баллы для каждого студента
-            await loadStudentsPoints(groupStudents, date);
+            // Загружаем ВСЕ баллы для студентов группы ОДНОВРЕМЕННО
+            await loadAllStudentsPoints(groupStudents, date);
             
             showMessage('✅ Данные загружены', 'success');
             
@@ -765,58 +765,105 @@
         }
     }
 
-    // Загрузка баллов для студентов группы
-    async function loadStudentsPoints(students, date) {
+    // Загрузка баллов для ВСЕХ студентов группы ОДНОВРЕМЕННО
+    async function loadAllStudentsPoints(students, date) {
         const tableBody = document.getElementById('journalTableBody');
-        tableBody.innerHTML = '';
         
-        for (const student of students) {
-            try {
-                // Загружаем текущие баллы через API
-                const url = `${API_URL}?action=getCurrentPoints&studentId=${student.id}&date=${encodeURIComponent(date)}`;
-                const response = await fetch(url);
-                const result = await response.json();
-                
-                const currentPoints = result.success ? result.currentPoints : 0;
-                
-                // Создаем строку таблицы
-                const row = document.createElement('tr');
-                
-                // Столбец с именем
-                const nameCell = document.createElement('td');
-                nameCell.textContent = student.name;
-                nameCell.style.padding = '10px 12px';
-                
-                // Столбец с текущими баллами
-                const currentCell = document.createElement('td');
-                currentCell.innerHTML = `<div class="current-points">${currentPoints}</div>`;
-                currentCell.style.textAlign = 'center';
-                currentCell.style.padding = '10px 12px';
-                
-                // Столбец для ввода новых баллов
-                const inputCell = document.createElement('td');
-                inputCell.style.textAlign = 'center';
-                inputCell.style.padding = '10px 12px';
-                const input = document.createElement('input');
-                input.type = 'number';
-                input.className = 'points-input';
-                input.min = '0';
-                input.max = '100';
-                input.value = currentPoints;
-                input.dataset.studentId = student.id;
-                input.dataset.studentName = student.name;
-                inputCell.appendChild(input);
-                
-                row.appendChild(nameCell);
-                row.appendChild(currentCell);
-                row.appendChild(inputCell);
-                
-                tableBody.appendChild(row);
-                
-            } catch (error) {
-                console.error(`Ошибка загрузки баллов для ${student.name}:`, error);
-            }
+        // Показываем индикатор загрузки
+        tableBody.innerHTML = `
+            <tr>
+                <td colspan="3" style="text-align: center; padding: 20px; color: #ccc;">
+                    ⏳ Загрузка данных...
+                </td>
+            </tr>
+        `;
+        
+        try {
+            // Создаем массив промисов для параллельной загрузки всех данных
+            const loadPromises = students.map(async (student) => {
+                try {
+                    const url = `${API_URL}?action=getCurrentPoints&studentId=${student.id}&date=${encodeURIComponent(date)}`;
+                    const response = await fetch(url);
+                    const result = await response.json();
+                    
+                    return {
+                        student: student,
+                        currentPoints: result.success ? result.currentPoints : 0,
+                        error: null
+                    };
+                } catch (error) {
+                    console.error(`Ошибка загрузки баллов для ${student.name}:`, error);
+                    return {
+                        student: student,
+                        currentPoints: 0,
+                        error: error
+                    };
+                }
+            });
+            
+            // Ждем загрузки ВСЕХ данных
+            const studentsWithPoints = await Promise.all(loadPromises);
+            
+            // Теперь ОДНОВРЕМЕННО отображаем всю таблицу
+            renderJournalTable(studentsWithPoints);
+            
+        } catch (error) {
+            console.error('Ошибка при загрузке данных студентов:', error);
+            tableBody.innerHTML = `
+                <tr>
+                    <td colspan="3" style="text-align: center; padding: 20px; color: #ff6b6b;">
+                        ❌ Ошибка загрузки данных
+                    </td>
+                </tr>
+            `;
         }
+    }
+
+    // Отображение всей таблицы журнала ОДНОВРЕМЕННО
+    function renderJournalTable(studentsWithPoints) {
+        const tableBody = document.getElementById('journalTableBody');
+        
+        if (studentsWithPoints.length === 0) {
+            tableBody.innerHTML = `
+                <tr>
+                    <td colspan="3" style="text-align: center; padding: 20px; color: #ccc;">
+                        Нет студентов в группе
+                    </td>
+                </tr>
+            `;
+            return;
+        }
+        
+        // Создаем HTML для всех строк сразу
+        let tableHTML = '';
+        
+        studentsWithPoints.forEach(item => {
+            const { student, currentPoints, error } = item;
+            
+            tableHTML += `
+                <tr>
+                    <td style="padding: 10px 12px;">
+                        ${student.name}
+                        ${error ? ' <span style="color: #ff6b6b; font-size: 12px;">(ошибка загрузки)</span>' : ''}
+                    </td>
+                    <td style="text-align: center; padding: 10px 12px;">
+                        <div class="current-points">${currentPoints}</div>
+                    </td>
+                    <td style="text-align: center; padding: 10px 12px;">
+                        <input type="number" 
+                               class="points-input" 
+                               min="0" 
+                               max="100" 
+                               value="${currentPoints}"
+                               data-student-id="${student.id}"
+                               data-student-name="${student.name}">
+                    </td>
+                </tr>
+            `;
+        });
+        
+        // ОДНОЙ операцией вставляем всю таблицу
+        tableBody.innerHTML = tableHTML;
     }
 
     // Сохранение всех баллов группы
