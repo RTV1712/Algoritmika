@@ -358,6 +358,16 @@
                 width: 200px;
             }
         }
+        /* Фиолетовая иконка календаря */
+input[type="date"]::-webkit-calendar-picker-indicator {
+    filter: invert(0.5) sepia(1) saturate(5) hue-rotate(250deg);
+    cursor: pointer;
+}
+
+input[type="date"]::-moz-calendar-picker-indicator {
+    filter: invert(0.5) sepia(1) saturate(5) hue-rotate(250deg);
+    cursor: pointer;
+}
     </style>
 </head>
 <body>
