@@ -974,14 +974,21 @@
             document.querySelector('.content').scrollIntoView({ behavior: 'smooth' });
         });
         
-        // Кнопка для преподавателей
-        document.getElementById('teacherButton').addEventListener('click', () => {
-            const loginSection = document.getElementById('loginSection');
-            if (loginSection) {
-                loginSection.style.display = 'block';
-                loginSection.scrollIntoView({ behavior: 'smooth' });
-            }
-        });
+       // Кнопка для преподавателей
+document.getElementById('teacherButton').addEventListener('click', () => {
+    const loginSection = document.getElementById('loginSection');
+    const teacherPanel = document.getElementById('teacherPanel');
+    
+    // Если панель преподавателя уже открыта - закрываем её
+    if (teacherPanel.style.display === 'block') {
+        teacherPanel.style.display = 'none';
+        loginSection.style.display = 'none';
+    } else {
+        // Иначе открываем форму входа
+        loginSection.style.display = 'block';
+        loginSection.scrollIntoView({ behavior: 'smooth' });
+    }
+});
         
         // Фильтр групп
         document.getElementById('groupFilter').addEventListener('change', (e) => {
