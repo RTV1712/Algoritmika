@@ -902,14 +902,22 @@ input[type="date"]::-moz-calendar-picker-indicator {
                     studentName: studentName,
                     points: points
                 });
-            }
+            }else if (points > 7) {
+            showMessage(`❌ Ошибка: у студента ${studentName} баллы не могут быть больше 7`, 'error');
+            return;
+        }
         });
         
         if (updates.length === 0) {
             showMessage('Нет данных для сохранения', 'error');
             return;
         }
-        
+        // Проверяем, что все баллы в допустимом диапазоне
+    const invalidPoints = updates.filter(update => update.points > 7);
+    if (invalidPoints.length > 0) {
+        showMessage('❌ Ошибка: баллы не могут быть больше 7', 'error');
+        return;
+    }
         showMessage(`🔄 Сохранение ${updates.length} записей...`, 'info');
         
         try {
