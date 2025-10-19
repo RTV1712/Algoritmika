@@ -368,6 +368,34 @@ input[type="date"]::-moz-calendar-picker-indicator {
     filter: invert(0.5) sepia(1) saturate(5) hue-rotate(250deg);
     cursor: pointer;
 }
+        /* Для варианта 2 - постоянный блок */
+.points-info-card {
+    background: linear-gradient(135deg, #2a2a2a, #3a2a4a);
+    border: 1px solid #9400d3;
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 20px;
+}
+
+.points-info-card h4 {
+    margin: 0 0 10px 0;
+    color: #00ff00;
+    text-align: center;
+}
+
+.criteria-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 8px;
+}
+
+.criterion {
+    background: #1a1a1a;
+    padding: 8px 12px;
+    border-radius: 4px;
+    border-left: 3px solid #9400d3;
+    font-size: 14px;
+}
     </style>
 </head>
 <body>
@@ -392,7 +420,19 @@ input[type="date"]::-moz-calendar-picker-indicator {
         <!-- Панель преподавателя -->
         <div id="teacherPanel" class="teacher-panel" style="display: none;">
             <h3>📝 Журнал баллов - Групповое редактирование</h3>
-            
+            <!-- Добавьте в панель преподавателя после заголовка -->
+<div class="points-info-card">
+    <h4>📊 Критерии оценивания (максимум 7 баллов за занятие):</h4>
+    <div class="criteria-grid">
+        <div class="criterion">✅ Посещение</div>
+        <div class="criterion">✅ Ответы на вопросы</div>
+        <div class="criterion">✅ Основные задания (100%)</div>
+        <div class="criterion">✅ Помощь преподавателю</div>
+        <div class="criterion">✅ Бонусные задания</div>
+        <div class="criterion">✅ Выдающиеся успехи</div>
+        <div class="criterion">✅ Модуль на 100%</div>
+    </div>
+</div>
             <div class="teacher-form">
                 <div class="form-group">
                     <label for="teacherSelect">👨‍🏫 Преподаватель:</label>
