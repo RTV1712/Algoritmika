@@ -396,6 +396,62 @@ input[type="date"]::-moz-calendar-picker-indicator {
     border-left: 3px solid #9400d3;
     font-size: 14px;
 }
+        /* Для варианта 3 - аккордеон */
+.points-accordion {
+    background: #2a2a2a;
+    border: 1px solid #9400d3;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    overflow: hidden;
+}
+
+.accordion-header {
+    padding: 12px 15px;
+    background: #3a2a4a;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-weight: bold;
+}
+
+.accordion-content {
+    display: none;
+    padding: 15px;
+}
+
+.accordion-content.active {
+    display: block;
+}
+
+.criterion-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px solid #3a3a3a;
+}
+
+.criterion-item:last-child {
+    border-bottom: none;
+}
+
+.criterion-point {
+    background: #9400d3;
+    color: white;
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: bold;
+    min-width: 60px;
+    text-align: center;
+}
+
+.criterion-text {
+    flex: 1;
+    margin-left: 15px;
+    color: #ffffff;
+}
     </style>
 </head>
 <body>
@@ -420,17 +476,41 @@ input[type="date"]::-moz-calendar-picker-indicator {
         <!-- Панель преподавателя -->
         <div id="teacherPanel" class="teacher-panel" style="display: none;">
             <h3>📝 Журнал баллов - Групповое редактирование</h3>
-            <!-- Добавьте в панель преподавателя после заголовка -->
-<div class="points-info-card">
-    <h4>📊 Критерии оценивания (максимум 7 баллов за занятие):</h4>
-    <div class="criteria-grid">
-        <div class="criterion">✅ Посещение</div>
-        <div class="criterion">✅ Ответы на вопросы</div>
-        <div class="criterion">✅ Основные задания (100%)</div>
-        <div class="criterion">✅ Помощь преподавателю</div>
-        <div class="criterion">✅ Бонусные задания</div>
-        <div class="criterion">✅ Выдающиеся успехи</div>
-        <div class="criterion">✅ Модуль на 100%</div>
+            <!-- Добавьте в панель преподавателя -->
+<div class="points-accordion">
+    <div class="accordion-header">
+        <span>📋 Критерии оценивания (макс. 7 баллов)</span>
+        <span class="accordion-icon">▼</span>
+    </div>
+    <div class="accordion-content">
+        <div class="criterion-item">
+            <span class="criterion-point">1 балл</span>
+            <span class="criterion-text">Посещение занятия</span>
+        </div>
+        <div class="criterion-item">
+            <span class="criterion-point">1 балл</span>
+            <span class="criterion-text">Ответы на вопросы преподавателя</span>
+        </div>
+        <div class="criterion-item">
+            <span class="criterion-point">1 балл</span>
+            <span class="criterion-text">Выполнение основных заданий (100%)</span>
+        </div>
+        <div class="criterion-item">
+            <span class="criterion-point">1 балл</span>
+            <span class="criterion-text">Помощь преподавателю</span>
+        </div>
+        <div class="criterion-item">
+            <span class="criterion-point">1 балл</span>
+            <span class="criterion-text">Выполнение бонусных заданий</span>
+        </div>
+        <div class="criterion-item">
+            <span class="criterion-point">1 балл</span>
+            <span class="criterion-text">За выдающиеся успехи</span>
+        </div>
+        <div class="criterion-item">
+            <span class="criterion-point">1 балл</span>
+            <span class="criterion-text">Выполнение всего модуля на 100%</span>
+        </div>
     </div>
 </div>
             <div class="teacher-form">
@@ -1090,6 +1170,13 @@ document.getElementById('teacherButton').addEventListener('click', () => {
         // ЗАГРУЗКА ДАННЫХ ПРИ СТАРТЕ - ЭТО ОЧЕНЬ ВАЖНО!
         loadStudents();
     });
+    // Добавьте в initEventListeners()
+document.querySelector('.accordion-header').addEventListener('click', function() {
+    const content = document.querySelector('.accordion-content');
+    const icon = document.querySelector('.accordion-icon');
+    content.classList.toggle('active');
+    icon.textContent = content.classList.contains('active') ? '▲' : '▼';
+});
 </script>
 </body>
 </html>
