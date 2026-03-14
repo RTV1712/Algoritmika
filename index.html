@@ -535,418 +535,437 @@
 
 <script>
     const API_URL = 'https://script.google.com/macros/s/AKfycbyQ7zNJbMACuJjtSR3AAvQcr_JPdk46L1EhbJyn-7rIVm-MIapmxRAN8l0JLXx-SgJz/exec';
-    const TEACHER_PASSWORD = 't123';
     
-    let studentsData = [];
-    let currentGroup = 'all';
-    let currentPeriod = 'all';
-    let searchQuery = '';
+const TEACHER_PASSWORD = 't123';
 
-    // Функция для аккордеона
-    function toggleAccordion(header) {
-        const content = header.nextElementSibling;
-        const icon = header.querySelector('.accordion-icon');
+let studentsData = [];
+let currentGroup = 'all';
+let currentPeriod = 'all';
+let searchQuery = '';
+
+// Функция для аккордеона
+function toggleAccordion(header) {
+    const content = header.nextElementSibling;
+    const icon = header.querySelector('.accordion-icon');
+    
+    content.classList.toggle('active');
+    icon.textContent = content.classList.contains('active') ? '▲' : '▼';
+}
+
+// Функция для подсчета суммы активных баллов группы
+function calculateGroupActivePoints(students) {
+    return students.reduce((sum, student) => sum + (student.active || 0), 0);
+}
+
+function getEmoji(points) {
+    if (points >= 0 && points < 20) return '👍';
+    if (points >= 20 && points < 40) return '😊';
+    if (points >= 40 && points < 60) return '⭐';
+    if (points >= 60 && points < 80) return '🚀';
+    if (points >= 80 && points <= 100) return '🔥';
+    return '';
+}
+
+async function loadStudents() {
+    try {
+        document.getElementById('students').innerHTML = '<div style="text-align: center; padding: 20px;">Загрузка данных...</div>';
         
-        content.classList.toggle('active');
-        icon.textContent = content.classList.contains('active') ? '▲' : '▼';
-    }
-
-    function getEmoji(points) {
-        if (points >= 0 && points < 20) return '👍';
-        if (points >= 20 && points < 40) return '😊';
-        if (points >= 40 && points < 60) return '⭐';
-        if (points >= 60 && points < 80) return '🚀';
-        if (points >= 80 && points <= 100) return '🔥';
-        return '';
-    }
-
-    async function loadStudents() {
-        try {
-            document.getElementById('students').innerHTML = '<div style="text-align: center; padding: 20px;">Загрузка данных...</div>';
-            
-            const response = await fetch(API_URL);
-            const data = await response.json();
-            
-            if (data.success && data.data) {
-                studentsData = data.data;
-                console.log('✅ Загружено студентов:', studentsData.length);
-            } else {
-                throw new Error('Ошибка загрузки данных');
-            }
-            
-            updateFilters();
-            displayStudents();
-            
-        } catch (error) {
-            document.getElementById('students').innerHTML = 
-                '<div style="text-align: center; padding: 20px; color: #ff4444;">Ошибка загрузки данных</div>';
-        }
-    }
-
-    function updateFilters() {
-        const groupFilter = document.getElementById('groupFilter');
-        const groups = [...new Set(studentsData.map(s => s.group))];
+        const response = await fetch(API_URL);
+        const data = await response.json();
         
-        groupFilter.innerHTML = '<option value="all">ВСЕ ГРУППЫ</option>';
-        groups.forEach(group => {
-            if (group) {
-                const option = document.createElement('option');
-                option.value = group;
-                option.textContent = group;
-                groupFilter.appendChild(option);
-            }
-        });
-    }
-
-    function calculatePeriodPoints(student, period) {
-        if (period === 'all') return student.active || 0;
-        if (!student.dates) return 0;
-        
-        const now = new Date();
-        let startDate;
-        
-        switch(period) {
-            case 'day': 
-                startDate = new Date(now);
-                startDate.setDate(now.getDate() - 1);
-                break;
-            case 'week': 
-                startDate = new Date(now);
-                startDate.setDate(now.getDate() - 7);
-                break;
-            case 'month': 
-                startDate = new Date(now);
-                startDate.setMonth(now.getMonth() - 1);
-                break;
-            default: return student.active || 0;
-        }
-        
-        let periodPoints = 0;
-        for (const [dateStr, points] of Object.entries(student.dates)) {
-            const dateParts = dateStr.split('.');
-            if (dateParts.length === 3) {
-                const date = new Date(dateParts[2], dateParts[1] - 1, dateParts[0]);
-                if (date >= startDate) periodPoints += points;
-            }
-        }
-        return periodPoints;
-    }
-
-    function displayStudents() {
-        const container = document.getElementById('students');
-        
-        const filtered = studentsData
-            .filter(s => (currentGroup === 'all' || s.group === currentGroup) && 
-                        s.name.toLowerCase().includes(searchQuery.toLowerCase()))
-            .map(s => ({...s, displayPoints: calculatePeriodPoints(s, currentPeriod)}))
-            .sort((a, b) => b.displayPoints - a.displayPoints);
-
-        container.innerHTML = '';
-
-        if (filtered.length === 0) {
-            container.innerHTML = '<div style="text-align: center; padding: 20px;">Студенты не найдены</div>';
-            return;
-        }
-
-        const maxPoints = Math.max(...filtered.map(s => s.displayPoints), 100);
-        
-        filtered.forEach(student => {
-            container.innerHTML += `
-                <div class="bar-container">
-                    <div class="student-info">
-                        <span class="student-name">${student.name.toUpperCase()}</span>
-                        <span class="student-points">
-                            ${student.total || 0} БАЛЛОВ<br>
-                            <span style="font-size: 12px; color: #888;">(активно ${student.active || 0})</span>
-                        </span>
-                    </div>
-                    <div class="bar-wrapper">
-                        <div class="bar" style="width: ${Math.min(((student.displayPoints || 0) / maxPoints) * 100, 100)}%"></div>
-                        <span class="emoji">${getEmoji(student.displayPoints || 0)}</span>
-                    </div>
-                </div>
-            `;
-        });
-    }
-
-    // Функции преподавателя
-    function checkPassword() {
-        const password = document.getElementById('teacherPassword').value;
-        
-        if (password === TEACHER_PASSWORD) {
-            document.getElementById('loginSection').style.display = 'none';
-            document.getElementById('teacherPanel').style.display = 'block';
-            loadTeachersForPanel();
+        if (data.success && data.data) {
+            studentsData = data.data;
+            console.log('✅ Загружено студентов:', studentsData.length);
         } else {
-            alert('❌ Неверный пароль');
-        }
-    }
-
-    function loadTeachersForPanel() {
-        const teachers = [...new Set(studentsData.map(s => s.teacher).filter(t => t))];
-        const teacherSelect = document.getElementById('teacherSelect');
-        teacherSelect.innerHTML = '<option value="">-- Выберите преподавателя --</option>';
-        
-        teachers.forEach(teacher => {
-            const option = document.createElement('option');
-            option.value = teacher;
-            option.textContent = teacher;
-            teacherSelect.appendChild(option);
-        });
-    }
-
-    function loadGroups() {
-        const teacher = document.getElementById('teacherSelect').value;
-        const groupSelect = document.getElementById('groupSelect');
-        
-        if (!teacher) {
-            groupSelect.innerHTML = '<option value="">-- Сначала выберите преподавателя --</option>';
-            groupSelect.disabled = true;
-            return;
+            throw new Error('Ошибка загрузки данных');
         }
         
-        const groups = [...new Set(studentsData
-            .filter(s => s.teacher === teacher)
-            .map(s => s.group)
-            .filter(g => g))];
+        updateFilters();
+        displayStudents();
         
-        groupSelect.innerHTML = '<option value="">-- Выберите группу --</option>';
-        groups.forEach(group => {
+    } catch (error) {
+        document.getElementById('students').innerHTML = 
+            '<div style="text-align: center; padding: 20px; color: #ff4444;">Ошибка загрузки данных</div>';
+    }
+}
+
+function updateFilters() {
+    const groupFilter = document.getElementById('groupFilter');
+    const groups = [...new Set(studentsData.map(s => s.group))];
+    
+    groupFilter.innerHTML = '<option value="all">ВСЕ ГРУППЫ</option>';
+    groups.forEach(group => {
+        if (group) {
             const option = document.createElement('option');
             option.value = group;
             option.textContent = group;
-            groupSelect.appendChild(option);
-        });
-        groupSelect.disabled = false;
-    }
-
-    function formatDateForComparison(dateString) {
-        if (!dateString) return '';
-        const parts = dateString.split('-');
-        if (parts.length === 3) {
-            return `${parts[2]}.${parts[1]}.${parts[0]}`;
+            groupFilter.appendChild(option);
         }
-        return dateString;
+    });
+}
+
+function calculatePeriodPoints(student, period) {
+    if (period === 'all') return student.active || 0;
+    if (!student.dates) return 0;
+    
+    const now = new Date();
+    let startDate;
+    
+    switch(period) {
+        case 'day': 
+            startDate = new Date(now);
+            startDate.setDate(now.getDate() - 1);
+            break;
+        case 'week': 
+            startDate = new Date(now);
+            startDate.setDate(now.getDate() - 7);
+            break;
+        case 'month': 
+            startDate = new Date(now);
+            startDate.setMonth(now.getMonth() - 1);
+            break;
+        default: return student.active || 0;
+    }
+    
+    let periodPoints = 0;
+    for (const [dateStr, points] of Object.entries(student.dates)) {
+        const dateParts = dateStr.split('.');
+        if (dateParts.length === 3) {
+            const date = new Date(dateParts[2], dateParts[1] - 1, dateParts[0]);
+            if (date >= startDate) periodPoints += points;
+        }
+    }
+    return periodPoints;
+}
+
+function displayStudents() {
+    const container = document.getElementById('students');
+    
+    const filtered = studentsData
+        .filter(s => (currentGroup === 'all' || s.group === currentGroup) && 
+                    s.name.toLowerCase().includes(searchQuery.toLowerCase()))
+        .map(s => ({...s, displayPoints: calculatePeriodPoints(s, currentPeriod)}))
+        .sort((a, b) => b.displayPoints - a.displayPoints);
+
+    container.innerHTML = '';
+
+    if (filtered.length === 0) {
+        container.innerHTML = '<div style="text-align: center; padding: 20px;">Студенты не найдены</div>';
+        return;
     }
 
-    async function loadGroupJournal() {
-        const teacher = document.getElementById('teacherSelect').value;
-        const group = document.getElementById('groupSelect').value;
-        const date = document.getElementById('dateSelect').value;
+    const maxPoints = Math.max(...filtered.map(s => s.displayPoints), 100);
+    
+    // Если выбрана конкретная группа, показываем сумму активных баллов
+    if (currentGroup !== 'all') {
+        const totalActive = calculateGroupActivePoints(filtered);
+        container.innerHTML += `
+            <div style="text-align: right; margin-bottom: 15px; padding: 10px; background: linear-gradient(135deg, #2a2a2a, #3a2a4a); border-radius: 8px; border-left: 4px solid #ffa500;">
+                <span style="color: #ffa500; font-weight: bold;">📊 Всего активных баллов группы: ${totalActive}</span>
+            </div>
+        `;
+    }
+    
+    filtered.forEach(student => {
+        container.innerHTML += `
+            <div class="bar-container">
+                <div class="student-info">
+                    <span class="student-name">${student.name.toUpperCase()}</span>
+                    <span class="student-points">
+                        ${student.total || 0} БАЛЛОВ<br>
+                        <span style="font-size: 12px; color: #888;">(активно ${student.active || 0})</span>
+                    </span>
+                </div>
+                <div class="bar-wrapper">
+                    <div class="bar" style="width: ${Math.min(((student.displayPoints || 0) / maxPoints) * 100, 100)}%"></div>
+                    <span class="emoji">${getEmoji(student.displayPoints || 0)}</span>
+                </div>
+            </div>
+        `;
+    });
+}
+
+// Функции преподавателя
+function checkPassword() {
+    const password = document.getElementById('teacherPassword').value;
+    
+    if (password === TEACHER_PASSWORD) {
+        document.getElementById('loginSection').style.display = 'none';
+        document.getElementById('teacherPanel').style.display = 'block';
+        loadTeachersForPanel();
+    } else {
+        alert('❌ Неверный пароль');
+    }
+}
+
+function loadTeachersForPanel() {
+    const teachers = [...new Set(studentsData.map(s => s.teacher).filter(t => t))];
+    const teacherSelect = document.getElementById('teacherSelect');
+    teacherSelect.innerHTML = '<option value="">-- Выберите преподавателя --</option>';
+    
+    teachers.forEach(teacher => {
+        const option = document.createElement('option');
+        option.value = teacher;
+        option.textContent = teacher;
+        teacherSelect.appendChild(option);
+    });
+}
+
+function loadGroups() {
+    const teacher = document.getElementById('teacherSelect').value;
+    const groupSelect = document.getElementById('groupSelect');
+    
+    if (!teacher) {
+        groupSelect.innerHTML = '<option value="">-- Сначала выберите преподавателя --</option>';
+        groupSelect.disabled = true;
+        return;
+    }
+    
+    const groups = [...new Set(studentsData
+        .filter(s => s.teacher === teacher)
+        .map(s => s.group)
+        .filter(g => g))];
+    
+    groupSelect.innerHTML = '<option value="">-- Выберите группу --</option>';
+    groups.forEach(group => {
+        const option = document.createElement('option');
+        option.value = group;
+        option.textContent = group;
+        groupSelect.appendChild(option);
+    });
+    groupSelect.disabled = false;
+}
+
+function formatDateForComparison(dateString) {
+    if (!dateString) return '';
+    const parts = dateString.split('-');
+    if (parts.length === 3) {
+        return `${parts[2]}.${parts[1]}.${parts[0]}`;
+    }
+    return dateString;
+}
+
+async function loadGroupJournal() {
+    const teacher = document.getElementById('teacherSelect').value;
+    const group = document.getElementById('groupSelect').value;
+    const date = document.getElementById('dateSelect').value;
+    
+    if (!teacher || !group || !date) {
+        document.getElementById('journalTableContainer').style.display = 'none';
+        return;
+    }
+    
+    try {
+        const groupStudents = studentsData.filter(s => s.teacher === teacher && s.group === group);
         
-        if (!teacher || !group || !date) {
-            document.getElementById('journalTableContainer').style.display = 'none';
+        if (groupStudents.length === 0) {
+            showMessage('❌ Нет студентов в группе', 'error');
             return;
         }
         
+        // Подсчитываем сумму активных баллов
+        const totalActive = calculateGroupActivePoints(groupStudents);
+        
+        document.getElementById('currentGroupName').innerHTML = `${group} <span style="color: #ffa500; font-size: 14px;">(всего активных баллов: ${totalActive})</span>`;
+        document.getElementById('journalTableContainer').style.display = 'block';
+        
+        const formattedDate = formatDateForComparison(date);
+        
+        let tableHTML = '';
+        
+        groupStudents.forEach(student => {
+            let currentPoints = 0;
+            if (student.dates && student.dates[formattedDate] !== undefined) {
+                currentPoints = student.dates[formattedDate];
+            }
+            
+            tableHTML += `
+                <tr>
+                    <td style="text-align: left;">${student.name}</td>
+                    <td class="total-points">${student.total || 0}</td>
+                    <td class="active-points">${student.active || 0}</td>
+                    <td>
+                        <input type="number" 
+                               class="points-input" 
+                               min="0" 
+                               max="7" 
+                               value="${currentPoints}"
+                               data-student-id="${student.id}"
+                               data-student-name="${student.name}">
+                    </td>
+                    <td>
+                        <input type="number" 
+                               class="spend-input" 
+                               min="0" 
+                               max="${student.active || 0}"
+                               value="0"
+                               data-student-id="${student.id}"
+                               data-student-name="${student.name}">
+                    </td>
+                </tr>
+            `;
+        });
+        
+        document.getElementById('journalTableBody').innerHTML = tableHTML;
+        
+    } catch (error) {
+        showMessage('❌ Ошибка загрузки данных', 'error');
+    }
+}
+
+async function saveAllChanges() {
+    const teacher = document.getElementById('teacherSelect').value;
+    const group = document.getElementById('groupSelect').value;
+    const date = document.getElementById('dateSelect').value;
+    
+    if (!teacher || !group || !date) {
+        showMessage('Заполните все поля', 'error');
+        return;
+    }
+    
+    const rows = document.querySelectorAll('#journalTableBody tr');
+    const operations = [];
+    
+    rows.forEach(row => {
+        const pointsInput = row.querySelector('.points-input');
+        const spendInput = row.querySelector('.spend-input');
+        
+        if (pointsInput) {
+            const points = parseInt(pointsInput.value) || 0;
+            if (points >= 0 && points <= 7) {
+                operations.push({
+                    type: 'earn',
+                    studentId: pointsInput.dataset.studentId,
+                    studentName: pointsInput.dataset.studentName,
+                    points: points
+                });
+            }
+        }
+        
+        if (spendInput) {
+            const spend = parseInt(spendInput.value) || 0;
+            if (spend > 0) {
+                operations.push({
+                    type: 'spend',
+                    studentId: spendInput.dataset.studentId,
+                    studentName: spendInput.dataset.studentName,
+                    points: spend
+                });
+            }
+        }
+    });
+    
+    if (operations.length === 0) {
+        showMessage('Нет изменений для сохранения', 'error');
+        return;
+    }
+    
+    showMessage(`🔄 Сохранение ${operations.length} операций...`, 'info');
+    
+    let successCount = 0;
+    let errorCount = 0;
+    
+    for (const op of operations) {
         try {
-            document.getElementById('currentGroupName').textContent = group;
-            document.getElementById('journalTableContainer').style.display = 'block';
-            
-            const groupStudents = studentsData.filter(s => s.teacher === teacher && s.group === group);
-            
-            if (groupStudents.length === 0) {
-                showMessage('❌ Нет студентов в группе', 'error');
-                return;
+            let url;
+            if (op.type === 'earn') {
+                url = `${API_URL}?action=updatePoints&studentId=${op.studentId}&date=${encodeURIComponent(date)}&points=${op.points}&teacher=${encodeURIComponent(teacher)}&group=${encodeURIComponent(group)}`;
+            } else {
+                url = `${API_URL}?action=spendPoints&studentId=${op.studentId}&date=${encodeURIComponent(date)}&points=${op.points}&teacher=${encodeURIComponent(teacher)}&group=${encodeURIComponent(group)}`;
             }
             
-            const formattedDate = formatDateForComparison(date);
+            const response = await fetch(url);
+            const result = await response.json();
             
-            let tableHTML = '';
-            
-            groupStudents.forEach(student => {
-                let currentPoints = 0;
-                if (student.dates && student.dates[formattedDate] !== undefined) {
-                    currentPoints = student.dates[formattedDate];
-                }
-                
-                tableHTML += `
-                    <tr>
-                        <td style="text-align: left;">${student.name}</td>
-                        <td class="total-points">${student.total || 0}</td>
-                        <td class="active-points">${student.active || 0}</td>
-                        <td>
-                            <input type="number" 
-                                   class="points-input" 
-                                   min="0" 
-                                   max="7" 
-                                   value="${currentPoints}"
-                                   data-student-id="${student.id}"
-                                   data-student-name="${student.name}">
-                        </td>
-                        <td>
-                            <input type="number" 
-                                   class="spend-input" 
-                                   min="0" 
-                                   max="${student.active || 0}"
-                                   value="0"
-                                   data-student-id="${student.id}"
-                                   data-student-name="${student.name}">
-                        </td>
-                    </tr>
-                `;
-            });
-            
-            document.getElementById('journalTableBody').innerHTML = tableHTML;
-            
-        } catch (error) {
-            showMessage('❌ Ошибка загрузки данных', 'error');
-        }
-    }
-
-    async function saveAllChanges() {
-        const teacher = document.getElementById('teacherSelect').value;
-        const group = document.getElementById('groupSelect').value;
-        const date = document.getElementById('dateSelect').value;
-        
-        if (!teacher || !group || !date) {
-            showMessage('Заполните все поля', 'error');
-            return;
-        }
-        
-        const rows = document.querySelectorAll('#journalTableBody tr');
-        const operations = [];
-        
-        rows.forEach(row => {
-            const pointsInput = row.querySelector('.points-input');
-            const spendInput = row.querySelector('.spend-input');
-            
-            if (pointsInput) {
-                const points = parseInt(pointsInput.value) || 0;
-                if (points >= 0 && points <= 7) {
-                    operations.push({
-                        type: 'earn',
-                        studentId: pointsInput.dataset.studentId,
-                        studentName: pointsInput.dataset.studentName,
-                        points: points
-                    });
-                }
-            }
-            
-            if (spendInput) {
-                const spend = parseInt(spendInput.value) || 0;
-                if (spend > 0) {
-                    operations.push({
-                        type: 'spend',
-                        studentId: spendInput.dataset.studentId,
-                        studentName: spendInput.dataset.studentName,
-                        points: spend
-                    });
-                }
-            }
-        });
-        
-        if (operations.length === 0) {
-            showMessage('Нет изменений для сохранения', 'error');
-            return;
-        }
-        
-        showMessage(`🔄 Сохранение ${operations.length} операций...`, 'info');
-        
-        let successCount = 0;
-        let errorCount = 0;
-        
-        for (const op of operations) {
-            try {
-                let url;
-                if (op.type === 'earn') {
-                    url = `${API_URL}?action=updatePoints&studentId=${op.studentId}&date=${encodeURIComponent(date)}&points=${op.points}&teacher=${encodeURIComponent(teacher)}&group=${encodeURIComponent(group)}`;
-                } else {
-                    url = `${API_URL}?action=spendPoints&studentId=${op.studentId}&date=${encodeURIComponent(date)}&points=${op.points}&teacher=${encodeURIComponent(teacher)}&group=${encodeURIComponent(group)}`;
-                }
-                
-                const response = await fetch(url);
-                const result = await response.json();
-                
-                if (result.success) {
-                    successCount++;
-                } else {
-                    errorCount++;
-                }
-            } catch (error) {
+            if (result.success) {
+                successCount++;
+            } else {
                 errorCount++;
             }
-        }
-        
-        if (errorCount === 0) {
-            showMessage(`✅ Успешно сохранено ${successCount} операций`, 'success');
-            loadStudents();
-            setTimeout(() => loadGroupJournal(), 1000);
-        } else {
-            showMessage(`✅ Сохранено ${successCount} операций, ❌ ошибок: ${errorCount}`, 'warning');
+        } catch (error) {
+            errorCount++;
         }
     }
-
-    function showMessage(text, type) {
-        const messageDiv = document.getElementById('message');
-        messageDiv.textContent = text;
-        const colors = {
-            success: '#2a5a2a',
-            error: '#5a2a2a',
-            info: '#2a2a5a',
-            warning: '#5a5a2a'
-        };
-        messageDiv.style.backgroundColor = colors[type] || '#2a2a2a';
-        messageDiv.style.color = type === 'success' ? '#90ee90' : 
-                               type === 'error' ? '#ff6b6b' : 
-                               type === 'warning' ? '#ffff90' : '#6b6bff';
-        
-        setTimeout(() => {
-            messageDiv.textContent = '';
-            messageDiv.style.backgroundColor = '';
-        }, 3000);
-    }
-
-    // Инициализация
-    function initEventListeners() {
-        document.getElementById('scrollButton').addEventListener('click', () => {
-            document.querySelector('.content').scrollIntoView({ behavior: 'smooth' });
-        });
-        
-        document.getElementById('teacherButton').addEventListener('click', () => {
-            const loginSection = document.getElementById('loginSection');
-            const teacherPanel = document.getElementById('teacherPanel');
-            
-            if (loginSection.style.display === 'block' || teacherPanel.style.display === 'block') {
-                teacherPanel.style.display = 'none';
-                loginSection.style.display = 'none';
-            } else {
-                loginSection.style.display = 'block';
-                loginSection.scrollIntoView({ behavior: 'smooth' });
-            }
-        });
-        
-        document.getElementById('groupFilter').addEventListener('change', (e) => {
-            currentGroup = e.target.value;
-            displayStudents();
-        });
-        
-        document.getElementById('searchInput').addEventListener('input', (e) => {
-            searchQuery = e.target.value.trim();
-            displayStudents();
-        });
-        
-        document.querySelectorAll('.time-filters button').forEach(button => {
-            button.addEventListener('click', (e) => {
-                currentPeriod = e.target.dataset.period;
-                document.querySelectorAll('.time-filters button').forEach(btn => btn.classList.remove('active'));
-                e.target.classList.add('active');
-                displayStudents();
-            });
-        });
-    }
-
-    document.addEventListener('DOMContentLoaded', function() {
-        initEventListeners();
-        
-        const dateSelect = document.getElementById('dateSelect');
-        if (dateSelect) {
-            const today = new Date().toISOString().split('T')[0];
-            dateSelect.value = today;
-        }
-        
+    
+    if (errorCount === 0) {
+        showMessage(`✅ Успешно сохранено ${successCount} операций`, 'success');
         loadStudents();
+        setTimeout(() => loadGroupJournal(), 1000);
+    } else {
+        showMessage(`✅ Сохранено ${successCount} операций, ❌ ошибок: ${errorCount}`, 'warning');
+    }
+}
+
+function showMessage(text, type) {
+    const messageDiv = document.getElementById('message');
+    messageDiv.textContent = text;
+    const colors = {
+        success: '#2a5a2a',
+        error: '#5a2a2a',
+        info: '#2a2a5a',
+        warning: '#5a5a2a'
+    };
+    messageDiv.style.backgroundColor = colors[type] || '#2a2a2a';
+    messageDiv.style.color = type === 'success' ? '#90ee90' : 
+                           type === 'error' ? '#ff6b6b' : 
+                           type === 'warning' ? '#ffff90' : '#6b6bff';
+    
+    setTimeout(() => {
+        messageDiv.textContent = '';
+        messageDiv.style.backgroundColor = '';
+    }, 3000);
+}
+
+// Инициализация
+function initEventListeners() {
+    document.getElementById('scrollButton').addEventListener('click', () => {
+        document.querySelector('.content').scrollIntoView({ behavior: 'smooth' });
     });
+    
+    document.getElementById('teacherButton').addEventListener('click', () => {
+        const loginSection = document.getElementById('loginSection');
+        const teacherPanel = document.getElementById('teacherPanel');
+        
+        if (loginSection.style.display === 'block' || teacherPanel.style.display === 'block') {
+            teacherPanel.style.display = 'none';
+            loginSection.style.display = 'none';
+        } else {
+            loginSection.style.display = 'block';
+            loginSection.scrollIntoView({ behavior: 'smooth' });
+        }
+    });
+    
+    document.getElementById('groupFilter').addEventListener('change', (e) => {
+        currentGroup = e.target.value;
+        displayStudents();
+    });
+    
+    document.getElementById('searchInput').addEventListener('input', (e) => {
+        searchQuery = e.target.value.trim();
+        displayStudents();
+    });
+    
+    document.querySelectorAll('.time-filters button').forEach(button => {
+        button.addEventListener('click', (e) => {
+            currentPeriod = e.target.dataset.period;
+            document.querySelectorAll('.time-filters button').forEach(btn => btn.classList.remove('active'));
+            e.target.classList.add('active');
+            displayStudents();
+        });
+    });
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    initEventListeners();
+    
+    const dateSelect = document.getElementById('dateSelect');
+    if (dateSelect) {
+        const today = new Date().toISOString().split('T')[0];
+        dateSelect.value = today;
+    }
+    
+    loadStudents();
+});
 </script>
 </body>
 </html>
