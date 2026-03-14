@@ -236,11 +236,17 @@
             padding: 12px;
             color: white;
             border-bottom: 2px solid #7a00b3;
+            text-align: center;
         }
 
         .journal-table td {
             padding: 10px 12px;
             border-bottom: 1px solid #3a3a3a;
+            text-align: center;
+        }
+
+        .journal-table td:first-child {
+            text-align: left;
         }
 
         .journal-table tr:hover {
@@ -248,35 +254,30 @@
         }
 
         .points-input {
-            width: 80px;
+            width: 70px;
             padding: 8px;
             text-align: center;
             background: #1a1a1a;
             border: 1px solid #9400d3;
             border-radius: 4px;
             color: white;
+            margin: 0 auto;
         }
 
         .spend-input {
             width: 70px;
-            padding: 6px;
+            padding: 8px;
             text-align: center;
             background: #1a1a1a;
             border: 1px solid #ff4444;
             border-radius: 4px;
             color: white;
+            margin: 0 auto;
         }
 
-        .current-points {
-            text-align: center;
-            font-weight: bold;
-            color: #00ff00;
-        }
-
-        .total-points { color: #00ff00; }
-        .active-points { color: #ffa500; }
-        .spent-points { color: #ff6b6b; }
-
+        .total-points { color: #00ff00; font-weight: bold; }
+        .active-points { color: #ffa500; font-weight: bold; }
+        
         .submit-btn {
             padding: 15px;
             font-size: 18px;
@@ -373,9 +374,21 @@
             font-size: 14px;
         }
 
+        .section-title {
+            color: #9400d3;
+            margin: 20px 0 10px;
+            font-size: 18px;
+        }
+
         @media (max-width: 768px) {
             .teacher-form {
                 grid-template-columns: 1fr;
+            }
+            .journal-table {
+                font-size: 14px;
+            }
+            .points-input, .spend-input {
+                width: 60px;
             }
             .cover-buttons {
                 flex-direction: column;
@@ -408,7 +421,7 @@
 
         <!-- Панель преподавателя -->
         <div id="teacherPanel" class="teacher-panel" style="display: none;">
-            <h3>📝 Управление баллами</h3>
+            <h3>📝 Управление баллами группы</h3>
             
             <!-- Аккордеон с подсказкой -->
             <div class="accordion">
@@ -451,7 +464,7 @@
                 </div>
             </div>
             
-            <!-- Форма выбора -->
+            <!-- Форма выбора группы -->
             <div class="teacher-form">
                 <div class="form-group">
                     <label for="teacherSelect">👨‍🏫 Преподаватель:</label>
@@ -462,79 +475,41 @@
                 
                 <div class="form-group">
                     <label for="groupSelect">👥 Группа:</label>
-                    <select id="groupSelect" onchange="loadStudentsForPanel()" disabled>
+                    <select id="groupSelect" onchange="loadGroupJournal()" disabled>
                         <option value="">-- Сначала выберите преподавателя --</option>
                     </select>
                 </div>
                 
                 <div class="form-group">
                     <label for="dateSelect">📅 Дата занятия:</label>
-                    <input type="date" id="dateSelect" onchange="loadCurrentPoints()">
+                    <input type="date" id="dateSelect" onchange="loadGroupJournal()">
                 </div>
             </div>
 
-            <!-- Индивидуальное редактирование -->
-            <div style="display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 15px; margin-bottom: 20px;">
-                <div class="form-group">
-                    <label for="studentSelect">🎓 Ученик:</label>
-                    <select id="studentSelect" onchange="loadCurrentPoints()" disabled>
-                        <option value="">-- Выберите ученика --</option>
-                    </select>
+            <!-- Таблица группы -->
+            <div id="journalTableContainer" style="display: none;">
+                <h4>Журнал группы: <span id="currentGroupName"></span></h4>
+                <div style="overflow-x: auto;">
+                    <table class="journal-table">
+                        <thead>
+                            <tr>
+                                <th style="width: 30%;">Ученик</th>
+                                <th style="width: 15%;">Всего баллов</th>
+                                <th style="width: 15%;">Активные баллы</th>
+                                <th style="width: 20%;">Баллы за занятие</th>
+                                <th style="width: 20%;">Списать баллы</th>
+                            </tr>
+                        </thead>
+                        <tbody id="journalTableBody">
+                            <!-- Строки будут добавляться через JavaScript -->
+                        </tbody>
+                    </table>
                 </div>
                 
-                <div class="form-group">
-                    <label>Текущие баллы:</label>
-                    <div id="currentPointsDisplay" style="background: #1a1a1a; padding: 12px; border: 1px solid #9400d3; border-radius: 5px; text-align: center; font-size: 18px; font-weight: bold; color: #00ff00;">0</div>
-                </div>
-                
-                <div class="form-group">
-                    <label for="pointsInput">Новые баллы:</label>
-                    <input type="number" id="pointsInput" min="0" max="7" value="0" style="padding: 12px; background: #1a1a1a; border: 1px solid #9400d3; border-radius: 5px; color: white; text-align: center; font-size: 16px;">
-                </div>
+                <button class="submit-btn" onclick="saveAllChanges()">
+                    💾 Сохранить все изменения
+                </button>
             </div>
-            
-            <button class="submit-btn" onclick="updatePoints()" style="margin-bottom: 20px;">
-                💾 Сохранить баллы ученику
-            </button>
-
-            <!-- Списание баллов -->
-            <h4 style="margin-top: 30px; color: #ff6b6b;">💰 Списание баллов</h4>
-            <div style="display: grid; grid-template-columns: 2fr 1fr 1fr 2fr; gap: 15px; margin-bottom: 20px;">
-                <div class="form-group">
-                    <label for="spendStudentSelect">🎓 Ученик:</label>
-                    <select id="spendStudentSelect" disabled>
-                        <option value="">-- Выберите ученика --</option>
-                    </select>
-                </div>
-                
-                <div class="form-group">
-                    <label>Активные:</label>
-                    <div id="activePointsDisplay" style="background: #1a1a1a; padding: 12px; border: 1px solid #ff4444; border-radius: 5px; text-align: center; font-weight: bold; color: #ffa500;">0</div>
-                </div>
-                
-                <div class="form-group">
-                    <label for="spendInput">Списать:</label>
-                    <input type="number" id="spendInput" min="0" value="0" style="padding: 12px; background: #1a1a1a; border: 1px solid #ff4444; border-radius: 5px; color: white; text-align: center;">
-                </div>
-                
-                <div class="form-group">
-                    <label for="spendReason">Причина:</label>
-                    <select id="spendReason" style="padding: 12px; background: #1a1a1a; border: 1px solid #ff4444; border-radius: 5px; color: white;">
-                        <option value="Мерч">🎁 Мерч</option>
-                        <option value="Сувенир">🏆 Сувенир</option>
-                        <option value="Приз">🏅 Приз</option>
-                        <option value="Другое">❔ Другое</option>
-                    </select>
-                </div>
-            </div>
-            
-            <div style="margin-bottom: 20px; display: none;" id="customReasonContainer">
-                <input type="text" id="customReason" placeholder="Укажите причину" style="width: 100%; padding: 12px; background: #1a1a1a; border: 1px solid #ff4444; border-radius: 5px; color: white;">
-            </div>
-            
-            <button class="submit-btn" onclick="spendPoints()" style="background: linear-gradient(135deg, #ff4444, #cc0000);">
-                💰 Списать баллы
-            </button>
             
             <div id="message" style="margin-top: 15px; padding: 10px; border-radius: 5px;"></div>
         </div>
@@ -631,9 +606,18 @@
         let startDate;
         
         switch(period) {
-            case 'day': startDate = new Date(now.setDate(now.getDate() - 1)); break;
-            case 'week': startDate = new Date(now.setDate(now.getDate() - 7)); break;
-            case 'month': startDate = new Date(now.setMonth(now.getMonth() - 1)); break;
+            case 'day': 
+                startDate = new Date(now);
+                startDate.setDate(now.getDate() - 1);
+                break;
+            case 'week': 
+                startDate = new Date(now);
+                startDate.setDate(now.getDate() - 7);
+                break;
+            case 'month': 
+                startDate = new Date(now);
+                startDate.setMonth(now.getMonth() - 1);
+                break;
             default: return student.active || 0;
         }
         
@@ -736,167 +720,176 @@
         groupSelect.disabled = false;
     }
 
-    function loadStudentsForPanel() {
-        const teacher = document.getElementById('teacherSelect').value;
-        const group = document.getElementById('groupSelect').value;
-        const studentSelect = document.getElementById('studentSelect');
-        const spendStudentSelect = document.getElementById('spendStudentSelect');
-        
-        if (!teacher || !group) {
-            studentSelect.disabled = true;
-            spendStudentSelect.disabled = true;
-            return;
+    function formatDateForComparison(dateString) {
+        if (!dateString) return '';
+        const parts = dateString.split('-');
+        if (parts.length === 3) {
+            return `${parts[2]}.${parts[1]}.${parts[0]}`;
         }
-        
-        const groupStudents = studentsData.filter(s => s.teacher === teacher && s.group === group);
-        
-        // Заполняем select для добавления баллов
-        studentSelect.innerHTML = '<option value="">-- Выберите ученика --</option>';
-        groupStudents.forEach(s => {
-            const option = document.createElement('option');
-            option.value = s.id;
-            option.textContent = s.name;
-            studentSelect.appendChild(option);
-        });
-        studentSelect.disabled = false;
-        
-        // Заполняем select для списания баллов
-        spendStudentSelect.innerHTML = '<option value="">-- Выберите ученика --</option>';
-        groupStudents.forEach(s => {
-            const option = document.createElement('option');
-            option.value = s.id;
-            option.textContent = `${s.name} (активно: ${s.active || 0})`;
-            option.setAttribute('data-active', s.active || 0);
-            spendStudentSelect.appendChild(option);
-        });
-        spendStudentSelect.disabled = false;
+        return dateString;
     }
 
-    async function loadCurrentPoints() {
-        const studentId = document.getElementById('studentSelect').value;
+    async function loadGroupJournal() {
+        const teacher = document.getElementById('teacherSelect').value;
+        const group = document.getElementById('groupSelect').value;
         const date = document.getElementById('dateSelect').value;
         
-        if (!studentId || !date) {
-            document.getElementById('currentPointsDisplay').textContent = '0';
-            document.getElementById('pointsInput').value = '0';
+        if (!teacher || !group || !date) {
+            document.getElementById('journalTableContainer').style.display = 'none';
             return;
         }
         
         try {
-            const url = `${API_URL}?action=getCurrentPoints&studentId=${studentId}&date=${encodeURIComponent(date)}`;
-            const response = await fetch(url);
-            const result = await response.json();
+            document.getElementById('currentGroupName').textContent = group;
+            document.getElementById('journalTableContainer').style.display = 'block';
             
-            const points = result.success ? result.currentPoints : 0;
-            document.getElementById('currentPointsDisplay').textContent = points;
-            document.getElementById('pointsInput').value = points;
+            const groupStudents = studentsData.filter(s => s.teacher === teacher && s.group === group);
+            
+            if (groupStudents.length === 0) {
+                showMessage('❌ Нет студентов в группе', 'error');
+                return;
+            }
+            
+            const formattedDate = formatDateForComparison(date);
+            
+            let tableHTML = '';
+            
+            groupStudents.forEach(student => {
+                let currentPoints = 0;
+                if (student.dates && student.dates[formattedDate] !== undefined) {
+                    currentPoints = student.dates[formattedDate];
+                }
+                
+                tableHTML += `
+                    <tr>
+                        <td style="text-align: left;">${student.name}</td>
+                        <td class="total-points">${student.total || 0}</td>
+                        <td class="active-points">${student.active || 0}</td>
+                        <td>
+                            <input type="number" 
+                                   class="points-input" 
+                                   min="0" 
+                                   max="7" 
+                                   value="${currentPoints}"
+                                   data-student-id="${student.id}"
+                                   data-student-name="${student.name}">
+                        </td>
+                        <td>
+                            <input type="number" 
+                                   class="spend-input" 
+                                   min="0" 
+                                   max="${student.active || 0}"
+                                   value="0"
+                                   data-student-id="${student.id}"
+                                   data-student-name="${student.name}">
+                        </td>
+                    </tr>
+                `;
+            });
+            
+            document.getElementById('journalTableBody').innerHTML = tableHTML;
             
         } catch (error) {
-            document.getElementById('currentPointsDisplay').textContent = '0';
-            document.getElementById('pointsInput').value = '0';
+            showMessage('❌ Ошибка загрузки данных', 'error');
         }
     }
 
-    async function updatePoints() {
+    async function saveAllChanges() {
         const teacher = document.getElementById('teacherSelect').value;
         const group = document.getElementById('groupSelect').value;
-        const studentId = document.getElementById('studentSelect').value;
         const date = document.getElementById('dateSelect').value;
-        const points = document.getElementById('pointsInput').value;
         
-        if (!teacher || !group || !studentId || !date) {
+        if (!teacher || !group || !date) {
             showMessage('Заполните все поля', 'error');
             return;
         }
         
-        if (points < 0 || points > 7) {
-            showMessage('Баллы должны быть от 0 до 7', 'error');
-            return;
-        }
+        const rows = document.querySelectorAll('#journalTableBody tr');
+        const operations = [];
         
-        try {
-            const url = `${API_URL}?action=updatePoints&studentId=${studentId}&date=${encodeURIComponent(date)}&points=${points}&teacher=${encodeURIComponent(teacher)}&group=${encodeURIComponent(group)}`;
-            const response = await fetch(url);
-            const result = await response.json();
+        rows.forEach(row => {
+            const pointsInput = row.querySelector('.points-input');
+            const spendInput = row.querySelector('.spend-input');
             
-            if (result.success) {
-                showMessage('✅ Баллы сохранены', 'success');
-                loadCurrentPoints();
-                loadStudents();
-            } else {
-                showMessage('❌ Ошибка сохранения', 'error');
+            if (pointsInput) {
+                const points = parseInt(pointsInput.value) || 0;
+                if (points >= 0 && points <= 7) {
+                    operations.push({
+                        type: 'earn',
+                        studentId: pointsInput.dataset.studentId,
+                        studentName: pointsInput.dataset.studentName,
+                        points: points
+                    });
+                }
             }
             
-        } catch (error) {
-            showMessage('❌ Ошибка соединения', 'error');
-        }
-    }
-
-    function updateSpendStudentInfo() {
-        const select = document.getElementById('spendStudentSelect');
-        const selected = select.options[select.selectedIndex];
-        const activePoints = selected ? selected.getAttribute('data-active') || 0 : 0;
-        document.getElementById('activePointsDisplay').textContent = activePoints;
-        document.getElementById('spendInput').max = activePoints;
-        document.getElementById('spendInput').value = '0';
-    }
-
-    async function spendPoints() {
-        const teacher = document.getElementById('teacherSelect').value;
-        const group = document.getElementById('groupSelect').value;
-        const studentId = document.getElementById('spendStudentSelect').value;
-        const date = document.getElementById('dateSelect').value;
-        const points = document.getElementById('spendInput').value;
-        const reasonSelect = document.getElementById('spendReason');
-        const customReason = document.getElementById('customReason');
-        
-        let reason = reasonSelect.value;
-        if (reason === 'Другое' && customReason.value) {
-            reason = customReason.value;
-        }
-        
-        if (!teacher || !group || !studentId || !date) {
-            showMessage('Заполните все поля', 'error');
-            return;
-        }
-        
-        if (points <= 0) {
-            showMessage('Введите количество баллов для списания', 'error');
-            return;
-        }
-        
-        try {
-            const url = `${API_URL}?action=spendPoints&studentId=${studentId}&date=${encodeURIComponent(date)}&points=${points}&reason=${encodeURIComponent(reason)}&teacher=${encodeURIComponent(teacher)}&group=${encodeURIComponent(group)}`;
-            const response = await fetch(url);
-            const result = await response.json();
-            
-            if (result.success) {
-                showMessage('✅ Баллы списаны', 'success');
-                loadStudents();
-                document.getElementById('spendInput').value = '0';
-                updateSpendStudentInfo();
-            } else {
-                showMessage('❌ Ошибка списания', 'error');
+            if (spendInput) {
+                const spend = parseInt(spendInput.value) || 0;
+                if (spend > 0) {
+                    operations.push({
+                        type: 'spend',
+                        studentId: spendInput.dataset.studentId,
+                        studentName: spendInput.dataset.studentName,
+                        points: spend
+                    });
+                }
             }
-            
-        } catch (error) {
-            showMessage('❌ Ошибка соединения', 'error');
+        });
+        
+        if (operations.length === 0) {
+            showMessage('Нет изменений для сохранения', 'error');
+            return;
+        }
+        
+        showMessage(`🔄 Сохранение ${operations.length} операций...`, 'info');
+        
+        let successCount = 0;
+        let errorCount = 0;
+        
+        for (const op of operations) {
+            try {
+                let url;
+                if (op.type === 'earn') {
+                    url = `${API_URL}?action=updatePoints&studentId=${op.studentId}&date=${encodeURIComponent(date)}&points=${op.points}&teacher=${encodeURIComponent(teacher)}&group=${encodeURIComponent(group)}`;
+                } else {
+                    url = `${API_URL}?action=spendPoints&studentId=${op.studentId}&date=${encodeURIComponent(date)}&points=${op.points}&teacher=${encodeURIComponent(teacher)}&group=${encodeURIComponent(group)}`;
+                }
+                
+                const response = await fetch(url);
+                const result = await response.json();
+                
+                if (result.success) {
+                    successCount++;
+                } else {
+                    errorCount++;
+                }
+            } catch (error) {
+                errorCount++;
+            }
+        }
+        
+        if (errorCount === 0) {
+            showMessage(`✅ Успешно сохранено ${successCount} операций`, 'success');
+            loadStudents();
+            setTimeout(() => loadGroupJournal(), 1000);
+        } else {
+            showMessage(`✅ Сохранено ${successCount} операций, ❌ ошибок: ${errorCount}`, 'warning');
         }
     }
-
-    // Обработчик для причины списания
-    document.getElementById('spendReason').addEventListener('change', function() {
-        const container = document.getElementById('customReasonContainer');
-        container.style.display = this.value === 'Другое' ? 'block' : 'none';
-    });
-
-    document.getElementById('spendStudentSelect').addEventListener('change', updateSpendStudentInfo);
 
     function showMessage(text, type) {
         const messageDiv = document.getElementById('message');
         messageDiv.textContent = text;
-        messageDiv.style.backgroundColor = type === 'success' ? '#2a5a2a' : '#5a2a2a';
-        messageDiv.style.color = type === 'success' ? '#90ee90' : '#ff6b6b';
+        const colors = {
+            success: '#2a5a2a',
+            error: '#5a2a2a',
+            info: '#2a2a5a',
+            warning: '#5a5a2a'
+        };
+        messageDiv.style.backgroundColor = colors[type] || '#2a2a2a';
+        messageDiv.style.color = type === 'success' ? '#90ee90' : 
+                               type === 'error' ? '#ff6b6b' : 
+                               type === 'warning' ? '#ffff90' : '#6b6bff';
         
         setTimeout(() => {
             messageDiv.textContent = '';
