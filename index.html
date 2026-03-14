@@ -15,24 +15,22 @@
         }
 
         .cover {
-            background: linear-gradient(135deg, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.5)), 
+            background: linear-gradient(135deg, rgba(0,0,0,0.7), rgba(0,0,0,0.5)), 
                         url('https://img3.akspic.ru/crops/5/4/7/2/5/152745/152745-dizajn-graficeskij_dizajn-sinij-krasochnost-purpur-3840x2160.jpg');
             background-size: cover;
             background-position: center;
-            background-repeat: no-repeat;
             height: 100vh;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             text-align: center;
-            position: relative;
         }
 
         .cover h1 {
             font-size: 48px;
             color: #ffffff;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
             margin-bottom: 20px;
         }
 
@@ -55,8 +53,6 @@
             transition: all 0.3s ease;
             text-transform: uppercase;
             text-decoration: none;
-            display: inline-block;
-            text-align: center;
         }
 
         .cover-button:hover {
@@ -118,6 +114,7 @@
         .student-points {
             font-size: 14px;
             color: #cccccc;
+            text-align: right;
         }
 
         .bar-wrapper {
@@ -138,10 +135,8 @@
             font-weight: bold;
             line-height: 30px;
             transition: width 0.5s ease;
-            box-shadow: 0 0 10px rgba(0,255,0,0.3);
             padding-right: 10px;
             box-sizing: border-box;
-            position: relative;
         }
 
         .emoji {
@@ -151,37 +146,6 @@
             transform: translateY(-50%);
             font-size: 20px;
             z-index: 2;
-        }
-
-        .points-scale {
-            display: flex;
-            justify-content: space-between;
-            margin: 20px 0 10px;
-            color: #ffffff;
-            font-size: 14px;
-            position: relative;
-        }
-
-        .scale-marker {
-            position: relative;
-            text-align: center;
-            flex: 1;
-        }
-
-        .scale-marker::after {
-            content: '';
-            position: absolute;
-            top: -10px;
-            left: 0;
-            width: 1px;
-            height: 5px;
-            background-color: #ffffff;
-        }
-
-        .scale-marker:first-child::after,
-        .scale-marker:last-child::after {
-            width: 2px;
-            height: 10px;
         }
 
         .time-filters {
@@ -205,14 +169,9 @@
 
         .time-filters button.active {
             background-color: #7a00b3;
-            box-shadow: 0 0 10px rgba(148, 0, 211, 0.5);
+            box-shadow: 0 0 10px rgba(148,0,211,0.5);
         }
 
-        .time-filters button:hover {
-            background-color: #7a00b3;
-        }
-
-        /* Стили для панели преподавателя */
         .teacher-panel {
             background-color: #2a2a2a;
             padding: 20px;
@@ -251,10 +210,18 @@
         .form-group input:focus, .form-group select:focus {
             outline: none;
             border-color: #00ff00;
-            box-shadow: 0 0 5px rgba(0, 255, 0, 0.3);
         }
 
-        /* Стили для таблицы журнала */
+        input[type="date"] {
+            color: #ffffff !important;
+        }
+
+        input[type="date"]::-webkit-calendar-picker-indicator {
+            filter: invert(1);
+            cursor: pointer;
+        }
+
+        /* Стили для таблицы */
         .journal-table {
             width: 100%;
             border-collapse: collapse;
@@ -267,7 +234,6 @@
         .journal-table th {
             background: #9400d3;
             padding: 12px;
-            text-align: left;
             color: white;
             border-bottom: 2px solid #7a00b3;
         }
@@ -275,7 +241,6 @@
         .journal-table td {
             padding: 10px 12px;
             border-bottom: 1px solid #3a3a3a;
-            vertical-align: middle;
         }
 
         .journal-table tr:hover {
@@ -290,13 +255,16 @@
             border: 1px solid #9400d3;
             border-radius: 4px;
             color: white;
-            font-size: 14px;
         }
 
-        .points-input:focus {
-            outline: none;
-            border-color: #00ff00;
-            box-shadow: 0 0 5px rgba(0, 255, 0, 0.3);
+        .spend-input {
+            width: 70px;
+            padding: 6px;
+            text-align: center;
+            background: #1a1a1a;
+            border: 1px solid #ff4444;
+            border-radius: 4px;
+            color: white;
         }
 
         .current-points {
@@ -304,6 +272,10 @@
             font-weight: bold;
             color: #00ff00;
         }
+
+        .total-points { color: #00ff00; }
+        .active-points { color: #ffa500; }
+        .spent-points { color: #ff6b6b; }
 
         .submit-btn {
             padding: 15px;
@@ -313,14 +285,13 @@
             border: none;
             border-radius: 8px;
             cursor: pointer;
-            transition: all 0.3s ease;
             width: 100%;
             margin-top: 20px;
         }
 
         .submit-btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(148, 0, 211, 0.4);
+            box-shadow: 0 5px 15px rgba(148,0,211,0.4);
         }
 
         .login-form {
@@ -329,125 +300,82 @@
             background-color: #2a2a2a;
             border-radius: 10px;
             margin: 20px 0;
-            border-left: 4px solid #9400d3;
         }
 
-        /* Стили для управления баллами */
-        .spend-input {
-            width: 70px;
-            padding: 6px;
-            text-align: center;
-            background: #1a1a1a;
-            border: 1px solid #ff4444;
-            border-radius: 4px;
-            color: white;
-            font-size: 14px;
-        }
-
-        .spend-input:focus {
-            outline: none;
-            border-color: #ff6b6b;
-            box-shadow: 0 0 5px rgba(255, 107, 107, 0.3);
-        }
-
-        .points-summary {
-            text-align: center;
-            font-weight: bold;
-        }
-
-        .total-points {
-            color: #00ff00;
-        }
-
-        .active-points {
-            color: #ffa500;
-        }
-
-        .spent-points {
-            color: #ff6b6b;
-        }
-
-        /* Стили для всплывающей подсказки о баллах */
-        .points-info-tooltip {
-            display: none;
-            position: absolute;
-            bottom: 100%;
-            left: 50%;
-            transform: translateX(-50%);
-            background: #2a2a2a;
-            border: 2px solid #9400d3;
+        /* Стили для аккордеона */
+        .accordion {
+            background-color: #2a2a2a;
+            border: 1px solid #9400d3;
             border-radius: 8px;
-            padding: 15px;
-            width: 320px;
-            z-index: 1000;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.5);
-            text-align: left;
+            margin-bottom: 20px;
+            overflow: hidden;
         }
 
-        .points-info-tooltip h4 {
-            margin: 0 0 8px 0;
-            color: #ffffff;
-            text-align: center;
+        .accordion-header {
+            background: linear-gradient(135deg, #9400d3, #7a00b3);
+            padding: 15px 20px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: bold;
+            font-size: 16px;
         }
 
-        .points-info-tooltip ul {
-            margin: 0;
-            padding-left: 0;
-            list-style: none;
+        .accordion-header:hover {
+            background: linear-gradient(135deg, #a020f0, #8a2be2);
         }
 
-        .points-info-tooltip li {
-            margin-bottom: 5px;
-            color: #ffffff;
-            font-size: 14px;
+        .accordion-icon {
+            font-size: 20px;
+            transition: transform 0.3s ease;
         }
 
-        /* Показывать подсказку при наведении */
-        div[style*="cursor: help"]:hover .points-info-tooltip {
+        .accordion-content {
+            display: none;
+            padding: 20px;
+            background-color: #1a1a1a;
+        }
+
+        .accordion-content.active {
             display: block;
         }
 
-        /* Стрелочка у подсказки */
-        .points-info-tooltip::after {
-            content: '';
-            position: absolute;
-            top: 100%;
-            left: 50%;
-            transform: translateX(-50%);
-            border: 8px solid transparent;
-            border-top-color: #9400d3;
+        .criteria-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
         }
 
-        /* Стили для date input */
-        input[type="date"] {
-            color: #ffffff !important;
+        .criterion-item {
+            background: #2a2a2a;
+            padding: 12px 15px;
+            border-radius: 6px;
+            border-left: 4px solid #9400d3;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
-        input[type="date"]::-webkit-calendar-picker-indicator {
-            filter: invert(1);
-            cursor: pointer;
+        .criterion-point {
+            background: #9400d3;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: bold;
+            min-width: 50px;
+            text-align: center;
         }
 
-        input[type="date"]::-moz-calendar-picker-indicator {
-            filter: invert(1);
-            cursor: pointer;
+        .criterion-text {
+            margin-left: 15px;
+            font-size: 14px;
         }
 
         @media (max-width: 768px) {
             .teacher-form {
                 grid-template-columns: 1fr;
-            }
-            .journal-table {
-                font-size: 14px;
-            }
-            .points-input {
-                width: 60px;
-            }
-            .spend-input {
-                width: 60px;
-            }
-            .filters {
-                flex-direction: column;
             }
             .cover-buttons {
                 flex-direction: column;
@@ -470,7 +398,7 @@
     </div>
 
     <div class="content">
-        <!-- Форма входа для преподавателей -->
+        <!-- Форма входа -->
         <div id="loginSection" class="login-form" style="display: none;">
             <h3>🔐 Доступ для преподавателей</h3>
             <input type="password" id="teacherPassword" placeholder="Введите пароль" 
@@ -478,31 +406,52 @@
             <button onclick="checkPassword()" class="cover-button" style="margin: 10px;">Войти</button>
         </div>
 
-        <!-- Панель преподавателя - Журнал -->
+        <!-- Панель преподавателя -->
         <div id="teacherPanel" class="teacher-panel" style="display: none;">
-            <h3>📝 Журнал баллов - Групповое редактирование</h3>
+            <h3>📝 Управление баллами</h3>
             
-            <!-- Информация о баллах -->
-            <div style="margin-bottom: 20px; text-align: center;">
-                <div style="display: inline-block; position: relative; cursor: help;">
-                    <span style="background: #9400d3; color: white; border-radius: 50%; width: 24px; height: 24px; display: inline-flex; align-items: center; justify-content: center; font-weight: bold; font-size: 16px;">?</span>
-                    <div class="points-info-tooltip">
-                        <h4>🎯 Критерии оценивания</h4>
-                        <p style="margin: 0 0 10px 0; color: #00ff00; font-weight: bold;">Максимум 7 баллов за занятие:</p>
-                        <ul>
-                            <li>✅ Посещение - 1 балл</li>
-                            <li>✅ Ответы на вопросы преподавателя - 1 балл</li>
-                            <li>✅ Выполнение основных заданий (100%) - 1 балл</li>
-                            <li>✅ Помощь преподавателю - 1 балл</li>
-                            <li>✅ Выполнение бонусных заданий - 1 балл</li>
-                            <li>✅ За выдающиеся успехи - 1 балл</li>
-                            <li>✅ Выполнение всего модуля на 100% - 1 балл</li>
-                        </ul>
-                    </div>
+            <!-- Аккордеон с подсказкой -->
+            <div class="accordion">
+                <div class="accordion-header" onclick="toggleAccordion(this)">
+                    <span>🎯 Критерии оценивания (нажмите для развертывания)</span>
+                    <span class="accordion-icon">▼</span>
                 </div>
-                <span style="margin-left: 10px; color: #ccc; font-size: 14px;">Наведите на иконку для информации о баллах</span>
+                <div class="accordion-content">
+                    <div class="criteria-grid">
+                        <div class="criterion-item">
+                            <span class="criterion-point">1 балл</span>
+                            <span class="criterion-text">Посещение занятия</span>
+                        </div>
+                        <div class="criterion-item">
+                            <span class="criterion-point">1 балл</span>
+                            <span class="criterion-text">Ответы на вопросы</span>
+                        </div>
+                        <div class="criterion-item">
+                            <span class="criterion-point">1 балл</span>
+                            <span class="criterion-text">Выполнение основных заданий (100%)</span>
+                        </div>
+                        <div class="criterion-item">
+                            <span class="criterion-point">1 балл</span>
+                            <span class="criterion-text">Помощь преподавателю</span>
+                        </div>
+                        <div class="criterion-item">
+                            <span class="criterion-point">1 балл</span>
+                            <span class="criterion-text">Выполнение бонусных заданий</span>
+                        </div>
+                        <div class="criterion-item">
+                            <span class="criterion-point">1 балл</span>
+                            <span class="criterion-text">Выдающиеся успехи</span>
+                        </div>
+                        <div class="criterion-item">
+                            <span class="criterion-point">1 балл</span>
+                            <span class="criterion-text">Модуль на 100%</span>
+                        </div>
+                    </div>
+                    <p style="color: #00ff00; margin-top: 15px; text-align: center; font-weight: bold;">Максимум 7 баллов за занятие</p>
+                </div>
             </div>
             
+            <!-- Форма выбора -->
             <div class="teacher-form">
                 <div class="form-group">
                     <label for="teacherSelect">👨‍🏫 Преподаватель:</label>
@@ -513,109 +462,84 @@
                 
                 <div class="form-group">
                     <label for="groupSelect">👥 Группа:</label>
-                    <select id="groupSelect" onchange="loadGroupJournal()" disabled>
+                    <select id="groupSelect" onchange="loadStudentsForPanel()" disabled>
                         <option value="">-- Сначала выберите преподавателя --</option>
                     </select>
                 </div>
                 
                 <div class="form-group">
                     <label for="dateSelect">📅 Дата занятия:</label>
-                    <input type="date" id="dateSelect" onchange="loadGroupJournal()">
+                    <input type="date" id="dateSelect" onchange="loadCurrentPoints()">
                 </div>
             </div>
 
-            <!-- Таблица журнала -->
-            <div id="journalTable" style="display: none;">
-                <h4>Журнал группы: <span id="currentGroupName"></span></h4>
-                <div style="overflow-x: auto;">
-                    <table class="journal-table">
-                        <thead>
-                            <tr>
-                                <th style="width: 50%;">Ученик</th>
-                                <th style="width: 25%; text-align: center;">Текущие баллы</th>
-                                <th style="width: 25%; text-align: center;">Новые баллы</th>
-                            </tr>
-                        </thead>
-                        <tbody id="journalTableBody">
-                            <!-- Строки будут добавляться через JavaScript -->
-                        </tbody>
-                    </table>
-                </div>
-                
-                <button class="submit-btn" onclick="updateGroupPoints()">
-                    💾 Сохранить все изменения
-                </button>
-            </div>
-            
-            <div id="message" style="margin-top: 15px; padding: 10px; border-radius: 5px;"></div>
-        </div>
-
-        <!-- Панель управления баллами -->
-        <div id="pointsManager" class="teacher-panel" style="display: none; margin-top: 30px;">
-            <h3>💰 Управление баллами - Списание баллов</h3>
-            
-            <div class="teacher-form">
+            <!-- Индивидуальное редактирование -->
+            <div style="display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 15px; margin-bottom: 20px;">
                 <div class="form-group">
-                    <label for="spendTeacherSelect">👨‍🏫 Преподаватель:</label>
-                    <select id="spendTeacherSelect" onchange="loadSpendGroups()">
-                        <option value="">-- Выберите преподавателя --</option>
+                    <label for="studentSelect">🎓 Ученик:</label>
+                    <select id="studentSelect" onchange="loadCurrentPoints()" disabled>
+                        <option value="">-- Выберите ученика --</option>
                     </select>
                 </div>
                 
                 <div class="form-group">
-                    <label for="spendGroupSelect">👥 Группа:</label>
-                    <select id="spendGroupSelect" onchange="loadSpendStudents()" disabled>
-                        <option value="">-- Сначала выберите преподавателя --</option>
+                    <label>Текущие баллы:</label>
+                    <div id="currentPointsDisplay" style="background: #1a1a1a; padding: 12px; border: 1px solid #9400d3; border-radius: 5px; text-align: center; font-size: 18px; font-weight: bold; color: #00ff00;">0</div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="pointsInput">Новые баллы:</label>
+                    <input type="number" id="pointsInput" min="0" max="7" value="0" style="padding: 12px; background: #1a1a1a; border: 1px solid #9400d3; border-radius: 5px; color: white; text-align: center; font-size: 16px;">
+                </div>
+            </div>
+            
+            <button class="submit-btn" onclick="updatePoints()" style="margin-bottom: 20px;">
+                💾 Сохранить баллы ученику
+            </button>
+
+            <!-- Списание баллов -->
+            <h4 style="margin-top: 30px; color: #ff6b6b;">💰 Списание баллов</h4>
+            <div style="display: grid; grid-template-columns: 2fr 1fr 1fr 2fr; gap: 15px; margin-bottom: 20px;">
+                <div class="form-group">
+                    <label for="spendStudentSelect">🎓 Ученик:</label>
+                    <select id="spendStudentSelect" disabled>
+                        <option value="">-- Выберите ученика --</option>
                     </select>
                 </div>
                 
                 <div class="form-group">
-                    <label for="spendDateSelect">📅 Дата списания:</label>
-                    <input type="date" id="spendDateSelect">
+                    <label>Активные:</label>
+                    <div id="activePointsDisplay" style="background: #1a1a1a; padding: 12px; border: 1px solid #ff4444; border-radius: 5px; text-align: center; font-weight: bold; color: #ffa500;">0</div>
                 </div>
-            </div>
-
-            <!-- Таблица для списания баллов -->
-            <div id="spendTable" style="display: none; margin-top: 20px;">
-                <h4>Списание баллов для группы: <span id="currentSpendGroupName"></span></h4>
                 
-                <div style="margin-bottom: 15px;">
-                    <label style="color: #ccc; margin-right: 10px;">Причина списания:</label>
-                    <select id="spendReason" style="padding: 8px; background: #1a1a1a; color: white; border: 1px solid #9400d3; border-radius: 4px;">
+                <div class="form-group">
+                    <label for="spendInput">Списать:</label>
+                    <input type="number" id="spendInput" min="0" value="0" style="padding: 12px; background: #1a1a1a; border: 1px solid #ff4444; border-radius: 5px; color: white; text-align: center;">
+                </div>
+                
+                <div class="form-group">
+                    <label for="spendReason">Причина:</label>
+                    <select id="spendReason" style="padding: 12px; background: #1a1a1a; border: 1px solid #ff4444; border-radius: 5px; color: white;">
                         <option value="Мерч">🎁 Мерч</option>
                         <option value="Сувенир">🏆 Сувенир</option>
                         <option value="Приз">🏅 Приз</option>
                         <option value="Другое">❔ Другое</option>
                     </select>
-                    <input type="text" id="customReason" placeholder="Укажите причину" style="padding: 8px; margin-left: 10px; background: #1a1a1a; color: white; border: 1px solid #9400d3; border-radius: 4px; display: none;">
                 </div>
-                
-                <div style="overflow-x: auto;">
-                    <table class="journal-table">
-                        <thead>
-                            <tr>
-                                <th style="width: 35%;">Ученик</th>
-                                <th style="width: 15%; text-align: center;">Всего баллов</th>
-                                <th style="width: 15%; text-align: center;">Активные баллы</th>
-                                <th style="width: 15%; text-align: center;">Потрачено</th>
-                                <th style="width: 20%; text-align: center;">Списать баллы</th>
-                            </tr>
-                        </thead>
-                        <tbody id="spendTableBody">
-                            <!-- Строки будут добавляться через JavaScript -->
-                        </tbody>
-                    </table>
-                </div>
-                
-                <button class="submit-btn" onclick="spendGroupPoints()" style="margin-top: 20px;">
-                    💰 Списать баллы
-                </button>
             </div>
             
-            <div id="spendMessage" style="margin-top: 15px; padding: 10px; border-radius: 5px;"></div>
+            <div style="margin-bottom: 20px; display: none;" id="customReasonContainer">
+                <input type="text" id="customReason" placeholder="Укажите причину" style="width: 100%; padding: 12px; background: #1a1a1a; border: 1px solid #ff4444; border-radius: 5px; color: white;">
+            </div>
+            
+            <button class="submit-btn" onclick="spendPoints()" style="background: linear-gradient(135deg, #ff4444, #cc0000);">
+                💰 Списать баллы
+            </button>
+            
+            <div id="message" style="margin-top: 15px; padding: 10px; border-radius: 5px;"></div>
         </div>
 
-        <!-- Фильтры времени -->
+        <!-- Фильтры -->
         <div class="time-filters">
             <button data-period="all" class="active">Все время</button>
             <button data-period="day">День</button>
@@ -623,7 +547,6 @@
             <button data-period="month">Месяц</button>
         </div>
 
-        <!-- Фильтры групп и поиск -->
         <div class="filters">
             <select id="groupFilter">
                 <option value="all">ВСЕ ГРУППЫ</option>
@@ -631,33 +554,27 @@
             <input type="text" id="searchInput" placeholder="Поиск по имени...">
         </div>
 
-        <!-- Шкала баллов -->
-        <div class="points-scale">
-            <div class="scale-marker"><span>0</span></div>
-            <div class="scale-marker"><span>10</span></div>
-            <div class="scale-marker"><span>20</span></div>
-            <div class="scale-marker"><span>30</span></div>
-            <div class="scale-marker"><span>40</span></div>
-            <div class="scale-marker"><span>50</span></div>
-            <div class="scale-marker"><span>60</span></div>
-            <div class="scale-marker"><span>70</span></div>
-            <div class="scale-marker"><span>80</span></div>
-            <div class="scale-marker"><span>90</span></div>
-            <div class="scale-marker"><span>100</span></div>
-        </div>
-
         <!-- Контейнер для студентов -->
         <div id="students"></div>
     </div>
 
 <script>
-    const API_URL = 'https://script.google.com/macros/s/AKfycbyj7inWDmPBVvW0QQw-bRdMuX_ZfD8mfoLUb8-RLQKEtG5urxeCTJEVrgwFX2rJbJJ0/exec';
+    const API_URL = 'https://script.google.com/macros/s/AKfycbyQ7zNJbMACuJjtSR3AAvQcr_JPdk46L1EhbJyn-7rIVm-MIapmxRAN8l0JLXx-SgJz/exec';
     const TEACHER_PASSWORD = 't123';
     
     let studentsData = [];
     let currentGroup = 'all';
     let currentPeriod = 'all';
     let searchQuery = '';
+
+    // Функция для аккордеона
+    function toggleAccordion(header) {
+        const content = header.nextElementSibling;
+        const icon = header.querySelector('.accordion-icon');
+        
+        content.classList.toggle('active');
+        icon.textContent = content.classList.contains('active') ? '▲' : '▼';
+    }
 
     function getEmoji(points) {
         if (points >= 0 && points < 20) return '👍';
@@ -670,33 +587,24 @@
 
     async function loadStudents() {
         try {
-            console.log('🔄 Загрузка данных с API...');
-            document.getElementById('students').innerHTML = '<div style="text-align: center; padding: 20px; color: #ccc;">Загрузка данных...</div>';
+            document.getElementById('students').innerHTML = '<div style="text-align: center; padding: 20px;">Загрузка данных...</div>';
             
             const response = await fetch(API_URL);
-            
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-            
             const data = await response.json();
             
             if (data.success && data.data) {
                 studentsData = data.data;
                 console.log('✅ Загружено студентов:', studentsData.length);
             } else {
-                throw new Error('Неверный формат данных от сервера: ' + JSON.stringify(data));
+                throw new Error('Ошибка загрузки данных');
             }
             
             updateFilters();
             displayStudents();
             
         } catch (error) {
-            console.error('❌ Ошибка загрузки:', error);
             document.getElementById('students').innerHTML = 
-                '<div style="text-align: center; padding: 20px; color: #ff4444;">' +
-                'Ошибка загрузки данных: ' + error.message + 
-                '</div>';
+                '<div style="text-align: center; padding: 20px; color: #ff4444;">Ошибка загрузки данных</div>';
         }
     }
 
@@ -716,147 +624,75 @@
     }
 
     function calculatePeriodPoints(student, period) {
-        if (period === 'all') {
-            return student.active;
-        }
-        
-        if (!student.dates || Object.keys(student.dates).length === 0) {
-            return 0;
-        }
+        if (period === 'all') return student.active || 0;
+        if (!student.dates) return 0;
         
         const now = new Date();
         let startDate;
         
         switch(period) {
-            case 'day':
-                startDate = new Date(now);
-                startDate.setDate(now.getDate() - 1);
-                break;
-            case 'week':
-                startDate = new Date(now);
-                startDate.setDate(now.getDate() - 7);
-                break;
-            case 'month':
-                startDate = new Date(now);
-                startDate.setMonth(now.getMonth() - 1);
-                break;
-            default:
-                return student.active;
+            case 'day': startDate = new Date(now.setDate(now.getDate() - 1)); break;
+            case 'week': startDate = new Date(now.setDate(now.getDate() - 7)); break;
+            case 'month': startDate = new Date(now.setMonth(now.getMonth() - 1)); break;
+            default: return student.active || 0;
         }
         
         let periodPoints = 0;
-        
-        for (const [dateString, points] of Object.entries(student.dates)) {
-            const pointsDate = parseDateString(dateString);
-            if (pointsDate && pointsDate >= startDate && pointsDate <= now) {
-                periodPoints += points;
+        for (const [dateStr, points] of Object.entries(student.dates)) {
+            const dateParts = dateStr.split('.');
+            if (dateParts.length === 3) {
+                const date = new Date(dateParts[2], dateParts[1] - 1, dateParts[0]);
+                if (date >= startDate) periodPoints += points;
             }
         }
-        
         return periodPoints;
-    }
-
-    function parseDateString(dateString) {
-        if (!dateString) return null;
-        
-        try {
-            const parts = dateString.split('.');
-            if (parts.length === 3) {
-                const day = parseInt(parts[0], 10);
-                const month = parseInt(parts[1], 10) - 1;
-                const year = parseInt(parts[2], 10);
-                
-                const date = new Date(year, month, day);
-                if (!isNaN(date.getTime()) && 
-                    date.getDate() === day && 
-                    date.getMonth() === month && 
-                    date.getFullYear() === year) {
-                    return date;
-                }
-            }
-        } catch (error) {
-            console.warn('Ошибка парсинга даты:', dateString, error);
-        }
-        
-        return null;
     }
 
     function displayStudents() {
         const container = document.getElementById('students');
         
         const filtered = studentsData
-            .filter(student => {
-                const groupMatch = currentGroup === 'all' || student.group === currentGroup;
-                const nameMatch = student.name && student.name.toLowerCase().includes(searchQuery.toLowerCase());
-                return groupMatch && nameMatch;
-            })
-            .map(student => ({
-                ...student,
-                displayPoints: student.active
-            }))
+            .filter(s => (currentGroup === 'all' || s.group === currentGroup) && 
+                        s.name.toLowerCase().includes(searchQuery.toLowerCase()))
+            .map(s => ({...s, displayPoints: calculatePeriodPoints(s, currentPeriod)}))
             .sort((a, b) => b.displayPoints - a.displayPoints);
 
         container.innerHTML = '';
 
         if (filtered.length === 0) {
-            container.innerHTML = '<div style="text-align: center; padding: 20px; color: #ccc;">Студенты не найдены</div>';
+            container.innerHTML = '<div style="text-align: center; padding: 20px;">Студенты не найдены</div>';
             return;
         }
 
         const maxPoints = Math.max(...filtered.map(s => s.displayPoints), 100);
         
         filtered.forEach(student => {
-            const barContainer = document.createElement('div');
-            barContainer.className = 'bar-container';
-
-            const infoContainer = document.createElement('div');
-            infoContainer.className = 'student-info';
-            
-            const nameSpan = document.createElement('span');
-            nameSpan.className = 'student-name';
-            nameSpan.textContent = student.name ? student.name.toUpperCase() : 'НЕИЗВЕСТНЫЙ СТУДЕНТ';
-            
-            const pointsSpan = document.createElement('span');
-            pointsSpan.className = 'student-points';
-            pointsSpan.innerHTML = `${student.total || 0} БАЛЛОВ<br>
-                                   <span style="font-size: 12px; color: #888;">(из них активно ${student.active || 0})</span>`;
-            
-            infoContainer.appendChild(nameSpan);
-            infoContainer.appendChild(pointsSpan);
-            
-            const barWrapper = document.createElement('div');
-            barWrapper.className = 'bar-wrapper';
-            
-            const bar = document.createElement('div');
-            bar.className = 'bar';
-            const width = Math.min(((student.active || 0) / maxPoints) * 100, 100);
-            bar.style.width = `${width}%`;
-            
-            const emojiSpan = document.createElement('span');
-            emojiSpan.className = 'emoji';
-            emojiSpan.textContent = getEmoji(student.active || 0);
-            
-            barWrapper.appendChild(bar);
-            barWrapper.appendChild(emojiSpan);
-            
-            barContainer.appendChild(infoContainer);
-            barContainer.appendChild(barWrapper);
-            
-            container.appendChild(barContainer);
+            container.innerHTML += `
+                <div class="bar-container">
+                    <div class="student-info">
+                        <span class="student-name">${student.name.toUpperCase()}</span>
+                        <span class="student-points">
+                            ${student.total || 0} БАЛЛОВ<br>
+                            <span style="font-size: 12px; color: #888;">(активно ${student.active || 0})</span>
+                        </span>
+                    </div>
+                    <div class="bar-wrapper">
+                        <div class="bar" style="width: ${Math.min(((student.displayPoints || 0) / maxPoints) * 100, 100)}%"></div>
+                        <span class="emoji">${getEmoji(student.displayPoints || 0)}</span>
+                    </div>
+                </div>
+            `;
         });
     }
 
-    // ========== ФУНКЦИИ ДЛЯ ЖУРНАЛА ==========
-
+    // Функции преподавателя
     function checkPassword() {
         const password = document.getElementById('teacherPassword').value;
         
         if (password === TEACHER_PASSWORD) {
             document.getElementById('loginSection').style.display = 'none';
             document.getElementById('teacherPanel').style.display = 'block';
-            document.getElementById('pointsManager').style.display = 'block';
             loadTeachersForPanel();
-            loadSpendTeachers();
         } else {
             alert('❌ Неверный пароль');
         }
@@ -886,12 +722,11 @@
         }
         
         const groups = [...new Set(studentsData
-            .filter(student => student.teacher === teacher)
-            .map(student => student.group)
+            .filter(s => s.teacher === teacher)
+            .map(s => s.group)
             .filter(g => g))];
         
         groupSelect.innerHTML = '<option value="">-- Выберите группу --</option>';
-        
         groups.forEach(group => {
             const option = document.createElement('option');
             option.value = group;
@@ -901,332 +736,117 @@
         groupSelect.disabled = false;
     }
 
-    async function loadGroupJournal() {
+    function loadStudentsForPanel() {
         const teacher = document.getElementById('teacherSelect').value;
         const group = document.getElementById('groupSelect').value;
-        const date = document.getElementById('dateSelect').value;
-        
-        if (!teacher || !group || !date) {
-            document.getElementById('journalTable').style.display = 'none';
-            return;
-        }
-        
-        try {
-            showMessage('🔄 Загрузка данных группы...', 'info');
-            
-            document.getElementById('currentGroupName').textContent = group;
-            document.getElementById('journalTable').style.display = 'block';
-            
-            const groupStudents = studentsData.filter(student => 
-                student.teacher === teacher && student.group === group
-            );
-            
-            await loadAllStudentsPoints(groupStudents, date);
-            
-            showMessage('✅ Данные загружены', 'success');
-            
-        } catch (error) {
-            console.error('Ошибка загрузки журнала:', error);
-            showMessage('❌ Ошибка загрузки данных', 'error');
-        }
-    }
-
-    async function loadAllStudentsPoints(students, date) {
-        const tableBody = document.getElementById('journalTableBody');
-        
-        tableBody.innerHTML = `
-            <tr>
-                <td colspan="3" style="text-align: center; padding: 20px; color: #ccc;">
-                    ⏳ Загрузка данных...
-                </td>
-            </tr>
-        `;
-        
-        try {
-            const loadPromises = students.map(async (student) => {
-                try {
-                    const url = `${API_URL}?action=getCurrentPoints&studentId=${student.id}&date=${encodeURIComponent(date)}`;
-                    const response = await fetch(url);
-                    const result = await response.json();
-                    
-                    return {
-                        student: student,
-                        currentPoints: result.success ? result.currentPoints : 0,
-                        error: null
-                    };
-                } catch (error) {
-                    return {
-                        student: student,
-                        currentPoints: 0,
-                        error: error
-                    };
-                }
-            });
-            
-            const studentsWithPoints = await Promise.all(loadPromises);
-            renderJournalTable(studentsWithPoints);
-            
-        } catch (error) {
-            console.error('Ошибка при загрузке данных студентов:', error);
-            tableBody.innerHTML = `
-                <tr>
-                    <td colspan="3" style="text-align: center; padding: 20px; color: #ff6b6b;">
-                        ❌ Ошибка загрузки данных
-                    </td>
-                </tr>
-            `;
-        }
-    }
-
-    function renderJournalTable(studentsWithPoints) {
-        const tableBody = document.getElementById('journalTableBody');
-        
-        if (studentsWithPoints.length === 0) {
-            tableBody.innerHTML = `
-                <tr>
-                    <td colspan="3" style="text-align: center; padding: 20px; color: #ccc;">
-                        Нет студентов в группе
-                    </td>
-                </tr>
-            `;
-            return;
-        }
-        
-        let tableHTML = '';
-        
-        studentsWithPoints.forEach(item => {
-            const { student, currentPoints } = item;
-            
-            tableHTML += `
-                <tr>
-                    <td style="padding: 10px 12px;">
-                        ${student.name}
-                    </td>
-                    <td style="text-align: center; padding: 10px 12px;">
-                        <div class="current-points">${currentPoints}</div>
-                    </td>
-                    <td style="text-align: center; padding: 10px 12px;">
-                        <input type="number" 
-                               class="points-input" 
-                               min="0" 
-                               max="7" 
-                               value="${currentPoints}"
-                               data-student-id="${student.id}"
-                               data-student-name="${student.name}">
-                    </td>
-                </tr>
-            `;
-        });
-        
-        tableBody.innerHTML = tableHTML;
-    }
-
-    async function updateGroupPoints() {
-        const teacher = document.getElementById('teacherSelect').value;
-        const group = document.getElementById('groupSelect').value;
-        const date = document.getElementById('dateSelect').value;
-        
-        if (!teacher || !group || !date) {
-            showMessage('Заполните все поля: преподаватель, группа и дата', 'error');
-            return;
-        }
-        
-        const inputs = document.querySelectorAll('.points-input');
-        const updates = [];
-        
-        inputs.forEach(input => {
-            const studentId = input.dataset.studentId;
-            const studentName = input.dataset.studentName;
-            const points = input.value;
-            
-            if (points !== '' && points >= 0 && points <= 7) {
-                updates.push({
-                    studentId: studentId,
-                    studentName: studentName,
-                    points: points
-                });
-            } else if (points > 7) {
-                showMessage(`❌ Ошибка: у студента ${studentName} баллы не могут быть больше 7`, 'error');
-                return;
-            }
-        });
-        
-        if (updates.length === 0) {
-            showMessage('Нет данных для сохранения', 'error');
-            return;
-        }
-        
-        showMessage(`🔄 Сохранение ${updates.length} записей...`, 'info');
-        
-        try {
-            let successCount = 0;
-            let errorCount = 0;
-            
-            for (const update of updates) {
-                try {
-                    const url = `${API_URL}?action=updatePoints&studentId=${update.studentId}&date=${encodeURIComponent(date)}&points=${update.points}&teacher=${encodeURIComponent(teacher)}&group=${encodeURIComponent(group)}`;
-                    const response = await fetch(url);
-                    const result = await response.json();
-                    
-                    if (result.success) {
-                        successCount++;
-                    } else {
-                        errorCount++;
-                    }
-                } catch (error) {
-                    errorCount++;
-                }
-            }
-            
-            if (errorCount === 0) {
-                showMessage(`✅ Успешно сохранено ${successCount} записей`, 'success');
-                loadStudents();
-                setTimeout(() => loadGroupJournal(), 1000);
-            } else {
-                showMessage(`✅ Сохранено ${successCount} записей, ❌ ошибок: ${errorCount}`, 'warning');
-            }
-            
-        } catch (error) {
-            showMessage('❌ Ошибка сохранения данных', 'error');
-        }
-    }
-
-    function showMessage(text, type) {
-        const messageDiv = document.getElementById('message');
-        if (!messageDiv) return;
-        
-        messageDiv.textContent = text;
-        const colors = {
-            success: '#2a5a2a',
-            error: '#5a2a2a', 
-            info: '#2a2a5a',
-            warning: '#5a5a2a'
-        };
-        messageDiv.style.backgroundColor = colors[type] || '#2a2a2a';
-        messageDiv.style.color = type === 'success' ? '#90ee90' : 
-                               type === 'error' ? '#ff6b6b' : 
-                               type === 'warning' ? '#ffff90' : '#6b6bff';
-        messageDiv.style.padding = '10px';
-        messageDiv.style.borderRadius = '5px';
-        messageDiv.style.marginTop = '15px';
-        
-        setTimeout(() => {
-            messageDiv.textContent = '';
-            messageDiv.style.backgroundColor = '';
-        }, 5000);
-    }
-
-    // ========== ФУНКЦИИ ДЛЯ УПРАВЛЕНИЯ БАЛЛАМИ ==========
-
-    function loadSpendTeachers() {
-        const teachers = [...new Set(studentsData.map(s => s.teacher).filter(t => t))];
-        const teacherSelect = document.getElementById('spendTeacherSelect');
-        teacherSelect.innerHTML = '<option value="">-- Выберите преподавателя --</option>';
-        
-        teachers.forEach(teacher => {
-            const option = document.createElement('option');
-            option.value = teacher;
-            option.textContent = teacher;
-            teacherSelect.appendChild(option);
-        });
-    }
-
-    function loadSpendGroups() {
-        const teacher = document.getElementById('spendTeacherSelect').value;
-        const groupSelect = document.getElementById('spendGroupSelect');
-        
-        if (!teacher) {
-            groupSelect.innerHTML = '<option value="">-- Сначала выберите преподавателя --</option>';
-            groupSelect.disabled = true;
-            return;
-        }
-        
-        const groups = [...new Set(studentsData
-            .filter(student => student.teacher === teacher)
-            .map(student => student.group)
-            .filter(g => g))];
-        
-        groupSelect.innerHTML = '<option value="">-- Выберите группу --</option>';
-        
-        groups.forEach(group => {
-            const option = document.createElement('option');
-            option.value = group;
-            option.textContent = group;
-            groupSelect.appendChild(option);
-        });
-        groupSelect.disabled = false;
-    }
-
-    function loadSpendStudents() {
-        const teacher = document.getElementById('spendTeacherSelect').value;
-        const group = document.getElementById('spendGroupSelect').value;
+        const studentSelect = document.getElementById('studentSelect');
+        const spendStudentSelect = document.getElementById('spendStudentSelect');
         
         if (!teacher || !group) {
-            document.getElementById('spendTable').style.display = 'none';
+            studentSelect.disabled = true;
+            spendStudentSelect.disabled = true;
             return;
         }
         
-        document.getElementById('currentSpendGroupName').textContent = group;
-        document.getElementById('spendTable').style.display = 'block';
-        renderSpendTable(teacher, group);
-    }
-
-    function renderSpendTable(teacher, group) {
-        const tableBody = document.getElementById('spendTableBody');
+        const groupStudents = studentsData.filter(s => s.teacher === teacher && s.group === group);
         
-        const groupStudents = studentsData.filter(student => 
-            student.teacher === teacher && student.group === group
-        );
-        
-        if (groupStudents.length === 0) {
-            tableBody.innerHTML = `
-                <tr>
-                    <td colspan="5" style="text-align: center; padding: 20px; color: #ccc;">
-                        Нет студентов в группе
-                    </td>
-                </tr>
-            `;
-            return;
-        }
-        
-        let tableHTML = '';
-        
-        groupStudents.forEach(student => {
-            tableHTML += `
-                <tr>
-                    <td style="padding: 10px 12px;">
-                        ${student.name}
-                    </td>
-                    <td style="text-align: center; padding: 10px 12px;">
-                        <div class="points-summary total-points">${student.total || 0}</div>
-                    </td>
-                    <td style="text-align: center; padding: 10px 12px;">
-                        <div class="points-summary active-points">${student.active || 0}</div>
-                    </td>
-                    <td style="text-align: center; padding: 10px 12px;">
-                        <div class="points-summary spent-points">${student.spent || 0}</div>
-                    </td>
-                    <td style="text-align: center; padding: 10px 12px;">
-                        <input type="number" 
-                               class="spend-input" 
-                               min="0" 
-                               max="${student.active || 0}"
-                               value="0"
-                               data-student-id="${student.id}"
-                               data-student-name="${student.name}"
-                               data-active-points="${student.active || 0}">
-                    </td>
-                </tr>
-            `;
+        // Заполняем select для добавления баллов
+        studentSelect.innerHTML = '<option value="">-- Выберите ученика --</option>';
+        groupStudents.forEach(s => {
+            const option = document.createElement('option');
+            option.value = s.id;
+            option.textContent = s.name;
+            studentSelect.appendChild(option);
         });
+        studentSelect.disabled = false;
         
-        tableBody.innerHTML = tableHTML;
+        // Заполняем select для списания баллов
+        spendStudentSelect.innerHTML = '<option value="">-- Выберите ученика --</option>';
+        groupStudents.forEach(s => {
+            const option = document.createElement('option');
+            option.value = s.id;
+            option.textContent = `${s.name} (активно: ${s.active || 0})`;
+            option.setAttribute('data-active', s.active || 0);
+            spendStudentSelect.appendChild(option);
+        });
+        spendStudentSelect.disabled = false;
     }
 
-    async function spendGroupPoints() {
-        const teacher = document.getElementById('spendTeacherSelect').value;
-        const group = document.getElementById('spendGroupSelect').value;
-        const date = document.getElementById('spendDateSelect').value;
+    async function loadCurrentPoints() {
+        const studentId = document.getElementById('studentSelect').value;
+        const date = document.getElementById('dateSelect').value;
+        
+        if (!studentId || !date) {
+            document.getElementById('currentPointsDisplay').textContent = '0';
+            document.getElementById('pointsInput').value = '0';
+            return;
+        }
+        
+        try {
+            const url = `${API_URL}?action=getCurrentPoints&studentId=${studentId}&date=${encodeURIComponent(date)}`;
+            const response = await fetch(url);
+            const result = await response.json();
+            
+            const points = result.success ? result.currentPoints : 0;
+            document.getElementById('currentPointsDisplay').textContent = points;
+            document.getElementById('pointsInput').value = points;
+            
+        } catch (error) {
+            document.getElementById('currentPointsDisplay').textContent = '0';
+            document.getElementById('pointsInput').value = '0';
+        }
+    }
+
+    async function updatePoints() {
+        const teacher = document.getElementById('teacherSelect').value;
+        const group = document.getElementById('groupSelect').value;
+        const studentId = document.getElementById('studentSelect').value;
+        const date = document.getElementById('dateSelect').value;
+        const points = document.getElementById('pointsInput').value;
+        
+        if (!teacher || !group || !studentId || !date) {
+            showMessage('Заполните все поля', 'error');
+            return;
+        }
+        
+        if (points < 0 || points > 7) {
+            showMessage('Баллы должны быть от 0 до 7', 'error');
+            return;
+        }
+        
+        try {
+            const url = `${API_URL}?action=updatePoints&studentId=${studentId}&date=${encodeURIComponent(date)}&points=${points}&teacher=${encodeURIComponent(teacher)}&group=${encodeURIComponent(group)}`;
+            const response = await fetch(url);
+            const result = await response.json();
+            
+            if (result.success) {
+                showMessage('✅ Баллы сохранены', 'success');
+                loadCurrentPoints();
+                loadStudents();
+            } else {
+                showMessage('❌ Ошибка сохранения', 'error');
+            }
+            
+        } catch (error) {
+            showMessage('❌ Ошибка соединения', 'error');
+        }
+    }
+
+    function updateSpendStudentInfo() {
+        const select = document.getElementById('spendStudentSelect');
+        const selected = select.options[select.selectedIndex];
+        const activePoints = selected ? selected.getAttribute('data-active') || 0 : 0;
+        document.getElementById('activePointsDisplay').textContent = activePoints;
+        document.getElementById('spendInput').max = activePoints;
+        document.getElementById('spendInput').value = '0';
+    }
+
+    async function spendPoints() {
+        const teacher = document.getElementById('teacherSelect').value;
+        const group = document.getElementById('groupSelect').value;
+        const studentId = document.getElementById('spendStudentSelect').value;
+        const date = document.getElementById('dateSelect').value;
+        const points = document.getElementById('spendInput').value;
         const reasonSelect = document.getElementById('spendReason');
         const customReason = document.getElementById('customReason');
         
@@ -1235,107 +855,56 @@
             reason = customReason.value;
         }
         
-        if (!teacher || !group || !date) {
-            showSpendMessage('Заполните все поля: преподаватель, группа и дата', 'error');
+        if (!teacher || !group || !studentId || !date) {
+            showMessage('Заполните все поля', 'error');
             return;
         }
         
-        if (!reason) {
-            showSpendMessage('Укажите причину списания', 'error');
+        if (points <= 0) {
+            showMessage('Введите количество баллов для списания', 'error');
             return;
         }
-        
-        const inputs = document.querySelectorAll('.spend-input');
-        const spendOperations = [];
-        
-        inputs.forEach(input => {
-            const studentId = input.dataset.studentId;
-            const studentName = input.dataset.studentName;
-            const activePoints = parseInt(input.dataset.activePoints) || 0;
-            const points = parseInt(input.value) || 0;
-            
-            if (points > 0) {
-                if (points > activePoints) {
-                    showSpendMessage(`❌ Ошибка: у студента ${studentName} нельзя списать ${points} баллов (доступно: ${activePoints})`, 'error');
-                    return;
-                }
-                
-                spendOperations.push({
-                    studentId: studentId,
-                    studentName: studentName,
-                    points: points,
-                    reason: reason
-                });
-            }
-        });
-        
-        if (spendOperations.length === 0) {
-            showSpendMessage('Нет данных для списания', 'error');
-            return;
-        }
-        
-        showSpendMessage(`🔄 Списание ${spendOperations.length} операций...`, 'info');
         
         try {
-            let successCount = 0;
-            let errorCount = 0;
+            const url = `${API_URL}?action=spendPoints&studentId=${studentId}&date=${encodeURIComponent(date)}&points=${points}&reason=${encodeURIComponent(reason)}&teacher=${encodeURIComponent(teacher)}&group=${encodeURIComponent(group)}`;
+            const response = await fetch(url);
+            const result = await response.json();
             
-            for (const operation of spendOperations) {
-                try {
-                    const url = `${API_URL}?action=spendPoints&studentId=${operation.studentId}&date=${encodeURIComponent(date)}&points=${operation.points}&reason=${encodeURIComponent(operation.reason)}`;
-                    const response = await fetch(url);
-                    const result = await response.json();
-                    
-                    if (result.success) {
-                        successCount++;
-                    } else {
-                        errorCount++;
-                    }
-                } catch (error) {
-                    errorCount++;
-                }
-            }
-            
-            if (errorCount === 0) {
-                showSpendMessage(`✅ Успешно списано ${successCount} операций`, 'success');
+            if (result.success) {
+                showMessage('✅ Баллы списаны', 'success');
                 loadStudents();
-                setTimeout(() => renderSpendTable(teacher, group), 1000);
+                document.getElementById('spendInput').value = '0';
+                updateSpendStudentInfo();
             } else {
-                showSpendMessage(`✅ Списано ${successCount} операций, ❌ ошибок: ${errorCount}`, 'warning');
+                showMessage('❌ Ошибка списания', 'error');
             }
             
         } catch (error) {
-            showSpendMessage('❌ Ошибка списания данных', 'error');
+            showMessage('❌ Ошибка соединения', 'error');
         }
     }
 
-    function showSpendMessage(text, type) {
-        const messageDiv = document.getElementById('spendMessage');
-        if (!messageDiv) return;
-        
+    // Обработчик для причины списания
+    document.getElementById('spendReason').addEventListener('change', function() {
+        const container = document.getElementById('customReasonContainer');
+        container.style.display = this.value === 'Другое' ? 'block' : 'none';
+    });
+
+    document.getElementById('spendStudentSelect').addEventListener('change', updateSpendStudentInfo);
+
+    function showMessage(text, type) {
+        const messageDiv = document.getElementById('message');
         messageDiv.textContent = text;
-        const colors = {
-            success: '#2a5a2a',
-            error: '#5a2a2a', 
-            info: '#2a2a5a',
-            warning: '#5a5a2a'
-        };
-        messageDiv.style.backgroundColor = colors[type] || '#2a2a2a';
-        messageDiv.style.color = type === 'success' ? '#90ee90' : 
-                               type === 'error' ? '#ff6b6b' : 
-                               type === 'warning' ? '#ffff90' : '#6b6bff';
-        messageDiv.style.padding = '10px';
-        messageDiv.style.borderRadius = '5px';
-        messageDiv.style.marginTop = '15px';
+        messageDiv.style.backgroundColor = type === 'success' ? '#2a5a2a' : '#5a2a2a';
+        messageDiv.style.color = type === 'success' ? '#90ee90' : '#ff6b6b';
         
         setTimeout(() => {
             messageDiv.textContent = '';
             messageDiv.style.backgroundColor = '';
-        }, 5000);
+        }, 3000);
     }
 
-    // ========== ОБРАБОТЧИКИ СОБЫТИЙ ==========
-
+    // Инициализация
     function initEventListeners() {
         document.getElementById('scrollButton').addEventListener('click', () => {
             document.querySelector('.content').scrollIntoView({ behavior: 'smooth' });
@@ -1347,7 +916,6 @@
             
             if (loginSection.style.display === 'block' || teacherPanel.style.display === 'block') {
                 teacherPanel.style.display = 'none';
-                document.getElementById('pointsManager').style.display = 'none';
                 loginSection.style.display = 'none';
             } else {
                 loginSection.style.display = 'block';
@@ -1368,23 +936,12 @@
         document.querySelectorAll('.time-filters button').forEach(button => {
             button.addEventListener('click', (e) => {
                 currentPeriod = e.target.dataset.period;
-                document.querySelectorAll('.time-filters button').forEach(btn => 
-                    btn.classList.remove('active'));
+                document.querySelectorAll('.time-filters button').forEach(btn => btn.classList.remove('active'));
                 e.target.classList.add('active');
                 displayStudents();
             });
         });
-        
-        document.getElementById('spendReason').addEventListener('change', function() {
-            const customReason = document.getElementById('customReason');
-            customReason.style.display = this.value === 'Другое' ? 'inline-block' : 'none';
-            if (this.value !== 'Другое') {
-                customReason.value = '';
-            }
-        });
     }
-
-    // ========== ИНИЦИАЛИЗАЦИЯ ==========
 
     document.addEventListener('DOMContentLoaded', function() {
         initEventListeners();
@@ -1393,12 +950,6 @@
         if (dateSelect) {
             const today = new Date().toISOString().split('T')[0];
             dateSelect.value = today;
-        }
-        
-        const spendDateSelect = document.getElementById('spendDateSelect');
-        if (spendDateSelect) {
-            const today = new Date().toISOString().split('T')[0];
-            spendDateSelect.value = today;
         }
         
         loadStudents();
